@@ -44,11 +44,20 @@ function Chef() {
 
     try {
       const prompt = buildPrompt(type)
+      console.log('🎤 Sending prompt to Chef...')
+      
       const response = await chatAPI.send(prompt)
+      console.log('✅ Got response:', response)
+      
+      if (!response || !response.response) {
+        throw new Error('No response from AI')
+      }
+      
       const parsedRecipes = parseRecipes(response.response)
+      console.log(`📋 Parsed ${parsedRecipes.length} recipes`)
       
       if (parsedRecipes.length === 0) {
-        console.error('No recipes parsed from:', response.response)
+        console.error('No recipes parsed from:', response.response.substring(0, 500))
         alert('Chef had trouble thinking of recipes. Try again!')
         setMode(MODE.HOME)
         return
@@ -57,8 +66,9 @@ function Chef() {
       setRecipes(parsedRecipes)
       setMode(MODE.RECIPES)
     } catch (err) {
-      console.error('Failed to get recipes:', err)
-      alert('Something went wrong. Check your connection and try again!')
+      console.error('❌ Chef error:', err)
+      console.error('Error details:', err.message, err.stack)
+      alert(`Error: ${err.message || 'Connection failed'}. Try again or check if your GROQ_API_KEY is set.`)
       setMode(MODE.HOME)
     } finally {
       setLoading(false)
