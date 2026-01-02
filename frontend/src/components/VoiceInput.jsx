@@ -82,20 +82,36 @@ function VoiceInput({ onTranscript, onItemsParsed }) {
 
   const parseVoiceInput = async (text) => {
     setIsParsing(true)
+    const startTime = Date.now()
+    
     try {
+      // Add timeout for slow responses
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 15000) // 15 sec timeout
+
       const response = await fetch('/api/inventory/parse-voice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ text }),
+        signal: controller.signal
       })
+
+      clearTimeout(timeoutId)
 
       if (!response.ok) throw new Error('Failed to parse voice input')
 
       const result = await response.json()
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1)
+      console.log(`✅ Parsed in ${elapsed}s`)
+      
       if (onItemsParsed) onItemsParsed(result.items)
     } catch (err) {
-      console.error('Parse error:', err)
-      setError('Could not parse your input. Try again!')
+      if (err.name === 'AbortError') {
+        setError('⏱️ Parsing took too long. Server might be waking up. Try again!')
+      } else {
+        console.error('Parse error:', err)
+        setError('Could not parse your input. Try again!')
+      }
     } finally {
       setIsParsing(false)
     }
@@ -137,7 +153,10 @@ function VoiceInput({ onTranscript, onItemsParsed }) {
       
       <div className={styles.status}>
         {isParsing ? (
-          <span className={styles.parsing}>🧠 Parsing your items...</span>
+          <>
+            <span className={styles.parsing}>🧠 AI is parsing your items...</span>
+            <span className={styles.subtext}>(First time may take 10-15s as server wakes up)</span>
+          </>
         ) : isListening ? (
           <span className={styles.active}>🎤 Listening... Speak clearly, then click mic again when done!</span>
         ) : (

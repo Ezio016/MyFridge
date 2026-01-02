@@ -265,10 +265,10 @@ Return ONLY the JSON, no other text."""
 
     try:
         response = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="llama-3.3-70b-versatile",  # Faster, more accurate model
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.3,  # Lower temperature for more consistent parsing
-            max_tokens=1000,
+            temperature=0.1,  # Even lower for fastest, most consistent parsing
+            max_tokens=500,  # Reduced for faster response
         )
         
         result_text = response.choices[0].message.content.strip()
