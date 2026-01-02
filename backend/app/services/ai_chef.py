@@ -230,33 +230,17 @@ async def parse_voice_to_items(text: str) -> dict:
             "error": "AI not configured. Please add items manually."
         }
     
-    # Simplified, more direct prompt
-    prompt = f"""You are a food item parser. Extract food items from this text and return ONLY valid JSON.
+    # Ultra-simple, strict JSON-only prompt
+    prompt = f"""Extract food items from this text. Return ONLY valid JSON array. No explanation, no markdown, ONLY JSON.
 
-Text: "{text}"
+Text: {text}
 
-Return this exact JSON format:
-{{
-  "items": [
-    {{
-      "name": "item name",
-      "quantity": 1,
-      "unit": "pieces",
-      "location": "fridge",
-      "category": "other",
-      "expiration_date": null,
-      "notes": null
-    }}
-  ]
-}}
+JSON format (copy exactly):
+{{"items":[{{"name":"item","quantity":1,"unit":"pieces","location":"fridge","category":"other","expiration_date":null,"notes":null}}]}}
 
-Rules:
-- Extract ALL food items mentioned
-- Use simple category: dairy, meat, seafood, vegetable, fruit, grain, beverage, condiment, snack, leftover, other
-- Default quantity to 1 if not mentioned
-- Default unit to "pieces"
-- Default location to "fridge"
-- Return ONLY JSON, no explanation"""
+Categories: dairy, meat, seafood, vegetable, fruit, grain, beverage, condiment, snack, other
+
+IMPORTANT: Return ONLY the JSON object. Nothing else."""
 
     try:
         print("🤖 Sending to Groq AI...")
@@ -271,20 +255,30 @@ Rules:
         )
         
         result_text = response.choices[0].message.content.strip()
-        print(f"📥 AI Response: {result_text[:200]}...")
+        print(f"📥 AI Response (first 300 chars): {result_text[:300]}")
         
-        # Try to extract JSON if there's extra text
+        # Try to extract and clean JSON
         import json
         import re
         
-        # Remove markdown code blocks if present
+        # Remove markdown code blocks
         result_text = re.sub(r'```json\s*', '', result_text)
         result_text = re.sub(r'```\s*', '', result_text)
+        result_text = result_text.strip()
         
-        # Find JSON in the response
-        json_match = re.search(r'\{.*\}', result_text, re.DOTALL)
+        # Find JSON object in the response
+        json_match = re.search(r'\{[\s\S]*\}', result_text)
         if json_match:
             result_text = json_match.group(0)
+        else:
+            print("⚠️ No JSON object found in response")
+            return {"items": [], "error": "AI didn't return valid JSON"}
+        
+        # Try to fix common JSON issues
+        # Remove trailing commas before } or ]
+        result_text = re.sub(r',(\s*[}\]])', r'\1', result_text)
+        
+        print(f"🔧 Cleaned JSON (first 300 chars): {result_text[:300]}")
         
         result = json.loads(result_text)
         print(f"✅ Parsed {len(result.get('items', []))} items")
@@ -302,10 +296,34 @@ Rules:
         
     except json.JSONDecodeError as e:
         print(f"❌ JSON parse error: {e}")
-        print(f"Raw response: {result_text}")
+        print(f"📄 Full raw response:\n{result_text}")
+        
+        # Last resort: try to extract item names with regex
+        try:
+            print("🚑 Attempting fallback parsing...")
+            # Look for quoted strings that might be item names
+            item_matches = re.findall(r'"name"\s*:\s*"([^"]+)"', result_text)
+            if item_matches:
+                fallback_items = [
+                    {
+                        "name": name,
+                        "quantity": 1,
+                        "unit": "pieces",
+                        "location": "fridge",
+                        "category": "other",
+                        "expiration_date": None,
+                        "notes": None
+                    }
+                    for name in item_matches
+                ]
+                print(f"✅ Fallback found {len(fallback_items)} items")
+                return {"items": fallback_items}
+        except Exception as fallback_error:
+            print(f"❌ Fallback also failed: {fallback_error}")
+        
         return {
             "items": [],
-            "error": f"Invalid JSON from AI: {str(e)}"
+            "error": f"AI returned invalid JSON. Try speaking more clearly."
         }
     except Exception as e:
         print(f"❌ Voice parsing error: {e}")
