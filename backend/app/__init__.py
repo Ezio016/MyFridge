@@ -1,0 +1,2 @@
+"""MyFridge Backend App."""
+

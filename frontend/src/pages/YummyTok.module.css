@@ -1,0 +1,276 @@
+.page {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  position: relative;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty h2 {
+  margin-top: 1rem;
+  color: var(--text-secondary);
+}
+
+/* Recipe Card */
+.card {
+  width: 100%;
+  max-width: 380px;
+  height: 500px;
+  background: var(--bg-card);
+  border: 2px solid var(--wood-dark);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.01);
+}
+
+.cardBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  background: linear-gradient(135deg, #1a1512 0%, #2d2520 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emoji {
+  font-size: 6rem;
+  opacity: 0.9;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
+}
+
+.cardContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  background: linear-gradient(to top, var(--bg-card) 70%, transparent);
+  min-height: 45%;
+}
+
+.source {
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.level {
+  text-transform: capitalize;
+  padding: 0.15rem 0.5rem;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+.details {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--wood-dark);
+  max-height: 200px;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.details h4 {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.details p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.details ol {
+  padding-left: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.details li {
+  margin-bottom: 0.35rem;
+}
+
+.tapHint {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+/* Navigation buttons */
+.navBtn {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--wood-dark);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.navBtn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.navBtn:disabled {
+  opacity: 0.3;
+}
+
+.navBtn.up {
+  top: 0;
+}
+
+.navBtn.down {
+  bottom: 100px;
+}
+
+/* Action buttons */
+.actions {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1.5rem;
+  z-index: 10;
+}
+
+.actionBtn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  border: 2px solid;
+}
+
+.actionBtn.dislike {
+  background: var(--bg-card);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.actionBtn.dislike:hover {
+  background: var(--danger);
+  color: white;
+}
+
+.actionBtn.save {
+  background: var(--bg-card);
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.actionBtn.save:hover,
+.actionBtn.save.saved {
+  background: var(--warning);
+  color: white;
+}
+
+.actionBtn.like {
+  background: var(--bg-card);
+  border-color: var(--fresh);
+  color: var(--fresh);
+}
+
+.actionBtn.like:hover,
+.actionBtn.like.liked {
+  background: var(--fresh);
+  color: white;
+}
+
+/* Progress */
+.progress {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--wood-dark);
+}
+
+@media (max-width: 400px) {
+  .card {
+    height: 420px;
+  }
+  
+  .emoji {
+    font-size: 4rem;
+  }
+  
+  .actions {
+    gap: 1rem;
+  }
+  
+  .actionBtn {
+    width: 50px;
+    height: 50px;
+  }
+}
+

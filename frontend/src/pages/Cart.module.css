@@ -1,0 +1,213 @@
+.page {
+  padding: 1rem 0;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.iconWrap {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-muted));
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.125rem;
+}
+
+.header p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.clearAllBtn {
+  margin-left: auto;
+  padding: 0.4rem 0.8rem;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.clearAllBtn:hover {
+  background: var(--danger);
+  color: white;
+}
+
+/* Add Form */
+.addForm {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.addForm input {
+  flex: 1;
+}
+
+.addBtn {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-muted));
+  border-radius: var(--radius-sm);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.addBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+/* Empty State */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-top: 1rem;
+}
+
+.empty span {
+  font-size: 0.9rem;
+}
+
+/* List */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-card);
+  border: 2px solid var(--wood-dark);
+  border-radius: var(--radius);
+  transition: all 0.2s;
+}
+
+.item:hover {
+  border-color: var(--accent);
+}
+
+.item.checked {
+  opacity: 0.6;
+  border-color: var(--fresh);
+}
+
+.checkbox {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkCircle {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--wood-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.checkbox:hover .checkCircle {
+  border-color: var(--accent);
+}
+
+.item.checked .checkCircle {
+  background: var(--fresh);
+  border-color: var(--fresh);
+  color: white;
+}
+
+.itemName {
+  flex: 1;
+  font-size: 1rem;
+}
+
+.item.checked .itemName {
+  text-decoration: line-through;
+}
+
+.deleteBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* Checked Section */
+.checkedSection {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--wood-dark);
+}
+
+.checkedHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.checkedHeader span {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.checkedHeader button {
+  font-size: 0.875rem;
+  color: var(--accent);
+}
+
+.checkedHeader button:hover {
+  text-decoration: underline;
+}
+

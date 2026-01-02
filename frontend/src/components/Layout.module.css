@@ -1,0 +1,116 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 85px;
+  position: relative;
+}
+
+/* Profile button - top right */
+.profileBtn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-card);
+  border: 2px solid var(--wood-dark);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  z-index: 100;
+  transition: all 0.2s;
+}
+
+.profileBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.main {
+  flex: 1;
+  padding: 1.5rem 0;
+}
+
+/* Bottom Navigation */
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  padding: 0.5rem 0.5rem 1rem;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--wood-dark);
+  z-index: 100;
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.4rem 0.8rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.65rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  border-radius: var(--radius-sm);
+}
+
+.navItem:hover {
+  color: var(--text-secondary);
+}
+
+.navItem.active {
+  color: var(--accent);
+}
+
+/* YummyTok button - prominent center */
+.yummyNav {
+  position: relative;
+  margin-top: -15px;
+}
+
+.yummyIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  border-radius: 50%;
+  color: white;
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.4);
+  transition: all 0.3s;
+}
+
+.yummyNav:hover .yummyIcon {
+  transform: scale(1.1);
+}
+
+.yummyNav.active .yummyIcon {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(236, 72, 153, 0.4); }
+  50% { box-shadow: 0 4px 24px rgba(236, 72, 153, 0.6); }
+}
+
+@media (max-width: 640px) {
+  .navItem {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.6rem;
+  }
+  
+  .yummyIcon {
+    width: 46px;
+    height: 46px;
+  }
+}
