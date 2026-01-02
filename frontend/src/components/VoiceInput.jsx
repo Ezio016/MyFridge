@@ -10,7 +10,7 @@ function VoiceInput({ onItemsParsed }) {
   const [isParsing, setIsParsing] = useState(false)
   const [itemsList, setItemsList] = useState([])
   const [editingIndex, setEditingIndex] = useState(null)
-  const [editForm, setEditForm] = useState({})
+  const [editValues, setEditValues] = useState({})
   const recognitionRef = useRef(null)
 
   useEffect(() => {
@@ -125,49 +125,46 @@ function VoiceInput({ onItemsParsed }) {
     setItemsList(prev => prev.filter((_, i) => i !== index))
     if (editingIndex === index) {
       setEditingIndex(null)
-      setEditForm({})
+      setEditValues({})
     }
   }
 
   const clearAll = () => {
     setItemsList([])
     setEditingIndex(null)
-    setEditForm({})
+    setEditValues({})
   }
 
-  const startEditing = (index) => {
+  const startEdit = (index) => {
     setEditingIndex(index)
-    setEditForm({ ...itemsList[index] })
+    setEditValues({
+      name: itemsList[index].name,
+      quantity: itemsList[index].quantity,
+      unit: itemsList[index].unit
+    })
   }
 
-  const cancelEditing = () => {
+  const cancelEdit = () => {
     setEditingIndex(null)
-    setEditForm({})
+    setEditValues({})
   }
 
   const saveEdit = () => {
     if (editingIndex !== null) {
       setItemsList(prev => prev.map((item, i) => 
-        i === editingIndex ? editForm : item
+        i === editingIndex ? { ...item, ...editValues } : item
       ))
       setEditingIndex(null)
-      setEditForm({})
+      setEditValues({})
     }
-  }
-
-  const handleEditChange = (field, value) => {
-    setEditForm(prev => ({
-      ...prev,
-      [field]: field === 'quantity' ? parseFloat(value) || 0 : value
-    }))
   }
 
   const submitAllItems = () => {
     if (onItemsParsed && itemsList.length > 0) {
       onItemsParsed(itemsList)
-      setItemsList([]) // Clear after submit
+      setItemsList([])
       setEditingIndex(null)
-      setEditForm({})
+      setEditValues({})
     }
   }
 
@@ -225,21 +222,20 @@ function VoiceInput({ onItemsParsed }) {
             {itemsList.map((item, index) => (
               <div key={index} className={styles.item}>
                 {editingIndex === index ? (
-                  // Edit Mode
-                  <div className={styles.editForm}>
+                  // Edit mode
+                  <>
                     <input
                       type="number"
                       className={styles.editInput}
-                      value={editForm.quantity || ''}
-                      onChange={(e) => handleEditChange('quantity', e.target.value)}
-                      placeholder="Qty"
-                      min="0.1"
+                      value={editValues.quantity}
+                      onChange={(e) => setEditValues({...editValues, quantity: parseFloat(e.target.value) || 0})}
                       step="0.1"
+                      min="0.1"
                     />
                     <select
                       className={styles.editSelect}
-                      value={editForm.unit || 'pieces'}
-                      onChange={(e) => handleEditChange('unit', e.target.value)}
+                      value={editValues.unit}
+                      onChange={(e) => setEditValues({...editValues, unit: e.target.value})}
                     >
                       <option value="pieces">pieces</option>
                       <option value="lb">lb</option>
@@ -251,34 +247,25 @@ function VoiceInput({ onItemsParsed }) {
                       <option value="cartons">cartons</option>
                       <option value="bottles">bottles</option>
                       <option value="cans">cans</option>
-                      <option value="bags">bags</option>
-                      <option value="bunches">bunches</option>
                       <option value="slices">slices</option>
+                      <option value="bunches">bunches</option>
+                      <option value="bags">bags</option>
                     </select>
                     <input
                       type="text"
-                      className={styles.editInput}
-                      value={editForm.name || ''}
-                      onChange={(e) => handleEditChange('name', e.target.value)}
-                      placeholder="Item name"
+                      className={styles.editInputName}
+                      value={editValues.name}
+                      onChange={(e) => setEditValues({...editValues, name: e.target.value})}
                     />
-                    <button 
-                      className={styles.saveBtn}
-                      onClick={saveEdit}
-                      title="Save"
-                    >
-                      <Check size={16} />
+                    <button className={styles.saveBtn} onClick={saveEdit} title="Save">
+                      <Check size={14} />
                     </button>
-                    <button 
-                      className={styles.cancelBtn}
-                      onClick={cancelEditing}
-                      title="Cancel"
-                    >
-                      <X size={16} />
+                    <button className={styles.cancelBtn} onClick={cancelEdit} title="Cancel">
+                      <X size={14} />
                     </button>
-                  </div>
+                  </>
                 ) : (
-                  // View Mode
+                  // View mode
                   <>
                     <span className={styles.itemText}>
                       {item.quantity} {item.unit} of {item.name}
@@ -286,7 +273,7 @@ function VoiceInput({ onItemsParsed }) {
                     <div className={styles.itemActions}>
                       <button 
                         className={styles.editBtn}
-                        onClick={() => startEditing(index)}
+                        onClick={() => startEdit(index)}
                         title="Edit"
                       >
                         <Edit2 size={14} />
@@ -296,7 +283,7 @@ function VoiceInput({ onItemsParsed }) {
                         onClick={() => removeItem(index)}
                         title="Remove"
                       >
-                        <X size={16} />
+                        <X size={14} />
                       </button>
                     </div>
                   </>

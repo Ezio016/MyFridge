@@ -181,6 +181,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
   padding: 0.75rem;
   background: var(--bg-secondary);
   border-radius: var(--radius-sm);
@@ -204,7 +205,9 @@
 }
 
 .editBtn,
-.removeBtn {
+.removeBtn,
+.saveBtn,
+.cancelBtn {
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -216,6 +219,7 @@
   justify-content: center;
   transition: all 0.2s;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .editBtn:hover {
@@ -224,58 +228,11 @@
   border-color: var(--accent);
 }
 
-.removeBtn:hover {
+.removeBtn:hover,
+.cancelBtn:hover {
   background: var(--danger);
   color: white;
   border-color: var(--danger);
-}
-
-/* Edit Form */
-.editForm {
-  display: flex;
-  gap: 0.5rem;
-  width: 100%;
-  align-items: center;
-}
-
-.editInput {
-  padding: 0.5rem;
-  border: 1px solid var(--wood-dark);
-  border-radius: var(--radius-sm);
-  background: var(--bg-card);
-  color: var(--text-primary);
-  font-size: 0.85rem;
-}
-
-.editInput[type="number"] {
-  width: 60px;
-}
-
-.editInput[type="text"] {
-  flex: 1;
-}
-
-.editSelect {
-  padding: 0.5rem;
-  border: 1px solid var(--wood-dark);
-  border-radius: var(--radius-sm);
-  background: var(--bg-card);
-  color: var(--text-primary);
-  font-size: 0.85rem;
-  width: 90px;
-}
-
-.saveBtn,
-.cancelBtn {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  padding: 0;
-  border: 1px solid var(--wood-dark);
 }
 
 .saveBtn {
@@ -288,15 +245,34 @@
   background: #16a34a;
 }
 
-.cancelBtn {
-  background: transparent;
-  color: var(--text-muted);
+/* Edit inputs */
+.editInput,
+.editInputName {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--wood-dark);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.85rem;
 }
 
-.cancelBtn:hover {
-  background: var(--danger);
-  color: white;
-  border-color: var(--danger);
+.editInput {
+  width: 60px;
+}
+
+.editInputName {
+  flex: 1;
+  min-width: 100px;
+}
+
+.editSelect {
+  padding: 0.4rem;
+  border: 1px solid var(--wood-dark);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  width: 90px;
 }
 
 .submitBtn {
