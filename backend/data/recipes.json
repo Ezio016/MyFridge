@@ -792,5 +792,344 @@
     "cuisine": "American",
     "category": "dessert",
     "image_url": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800"
+  },
+  {
+    "id": "bootstrap_001",
+    "source": "Curated (facts), MyFridge (content)",
+    "name": "Classic Scrambled Eggs",
+    "description": "A delicious American recipe with eggs, butter, milk and more. Ready in 5 minutes!",
+    "prep_time": 5,
+    "cook_time": 5,
+    "total_time": 10,
+    "servings": 2,
+    "difficulty": "easy",
+    "ingredients": [
+      "eggs",
+      "butter",
+      "milk",
+      "salt",
+      "pepper"
+    ],
+    "instructions": [
+      "Gather all ingredients: eggs, butter, milk, salt, pepper.",
+      "Pour eggs and stir gently.",
+      "Cook until just set.",
+      "Season and serve.",
+      "Serve immediately. Serves 2."
+    ],
+    "tags": [
+      "quick",
+      "easy",
+      "protein"
+    ],
+    "cuisine": "American",
+    "category": "breakfast",
+    "image_url": ""
+  },
+  {
+    "id": "bootstrap_002",
+    "source": "Curated (facts), MyFridge (content)",
+    "name": "Fluffy Pancakes",
+    "description": "A delicious American recipe with flour, milk, eggs and more. Ready in 15 minutes!",
+    "prep_time": 10,
+    "cook_time": 15,
+    "total_time": 25,
+    "servings": 4,
+    "difficulty": "medium",
+    "ingredients": [
+      "flour",
+      "milk",
+      "eggs",
+      "sugar",
+      "baking powder",
+      "butter",
+      "vanilla extract"
+    ],
+    "instructions": [
+      "Gather all ingredients: flour, milk, eggs, sugar, baking powder.",
+      "Mix dry ingredients.",
+      "Whisk wet ingredients separately.",
+      "Combine wet and dry gently.",
+      "Heat griddle with butter.",
+      "Pour batter and cook until bubbles form.",
+      "Serve immediately. Serves 4."
+    ],
+    "tags": [
+      "breakfast",
+      "weekend",
+      "family"
+    ],
+    "cuisine": "American",
+    "category": "breakfast",
+    "image_url": ""
+  },
+  {
+    "id": "bootstrap_003",
+    "source": "Curated (facts), MyFridge (content)",
+    "name": "Avocado Toast",
+    "description": "A delicious Modern recipe with bread, avocado, lemon juice and more. Ready in 3 minutes!",
+    "prep_time": 5,
+    "cook_time": 3,
+    "total_time": 8,
+    "servings": 1,
+    "difficulty": "easy",
+    "ingredients": [
+      "bread",
+      "avocado",
+      "lemon juice",
+      "salt",
+      "pepper",
+      "red pepper flakes"
+    ],
+    "instructions": [
+      "Gather all ingredients: bread, avocado, lemon juice, salt, pepper.",
+      "Season with salt and pepper.",
+      "Serve immediately. Serves 1."
+    ],
+    "tags": [
+      "healthy",
+      "vegetarian",
+      "trendy"
+    ],
+    "cuisine": "Modern",
+    "category": "breakfast",
+    "image_url": ""
+  },
+  {
+    "id": "bootstrap_004",
+    "source": "Curated (facts), MyFridge (content)",
+    "name": "Overnight Oats",
+    "description": "A delicious International recipe with rolled oats, milk, yogurt and more. Ready in 0 minutes!",
+    "prep_time": 5,
+    "cook_time": 0,
+    "total_time": 5,
+    "servings": 1,
+    "difficulty": "easy",
+    "ingredients": [
+      "rolled oats",
+      "milk",
+      "yogurt",
+      "honey",
+      "berries",
+      "chia seeds"
+    ],
+    "instructions": [
+      "Gather all ingredients: rolled oats, milk, yogurt, honey, berries.",
+      "Mix oats, milk, and yogurt.",
+      "Add chia seeds and honey.",
+      "Serve immediately. Serves 1."
+    ],
+    "tags": [
+      "healthy",
+      "no-cook",
+      "meal-prep"
+    ],
+    "cuisine": "International",
+    "category": "breakfast",
+    "image_url": ""
+  },
+  {
+    "id": "bootstrap_005",
+    "source": "Curated (facts), MyFridge (content)",
+    "name": "French Toast",
+    "description": "A delicious French recipe with bread, eggs, milk and more. Ready in 10 minutes!",
+    "prep_time": 5,
+    "cook_time": 10,
+    "total_time": 15,
+    "servings": 2,
+    "difficulty": "easy",
+    "ingredients": [
+      "bread",
+      "eggs",
+      "milk",
+      "cinnamon",
+      "vanilla extract",
+      "butter",
+      "maple syrup"
+    ],
+    "instructions": [
+      "Gather all ingredients: bread, eggs, milk, cinnamon, vanilla extract.",
+      "Dip bread slices in egg mixture.",
+      "Cook bread until golden on both sides.",
+      "Serve with maple syrup.",
+      "Serve immediately. Serves 2."
+    ],
+    "tags": [
+      "comfort-food",
+      "weekend",
+      "sweet"
+    ],
+    "cuisine": "French",
+    "category": "breakfast",
+    "image_url": ""
+  },
+  {
+    "id": "bootstrap_006",
+    "source": "Curated (facts), MyFridge (content)",
+    "name": "Spaghetti Aglio e Olio",
+    "description": "A delicious Italian recipe with spaghetti, garlic, olive oil and more. Ready in 15 minutes!",
+    "prep_time": 5,
+    "cook_time": 15,
+    "total_time": 20,
+    "servings": 4,
+    "difficulty": "easy",
+    "ingredients": [
+      "spaghetti",
+      "garlic",
+      "olive oil",
+      "red pepper flakes",
+      "parsley",
+      "parmesan cheese"
+    ],
+    "instructions": [
+      "Gather all ingredients: spaghetti, garlic, olive oil, red pepper flakes, parsley.",
+      "Cook spaghetti until al dente.",
+      "Sauté minced garlic in olive oil.",
+      "Add red pepper flakes.",
+      "Serve immediately. Serves 4."
+    ],
+    "tags": [
+      "quick",
+      "vegetarian",
+      "pasta"
+    ],
+    "cuisine": "Italian",
+    "category": "main",
+    "image_url": ""
+  },
+  {
+    "id": "bootstrap_007",
+    "source": "Curated (facts), MyFridge (content)",
+    "name": "Chicken Stir Fry",
+    "description": "A delicious Asian recipe with chicken breast, soy sauce, vegetables and more. Ready in 15 minutes!",
+    "prep_time": 15,
+    "cook_time": 15,
+    "total_time": 30,
+    "servings": 4,
+    "difficulty": "medium",
+    "ingredients": [
+      "chicken breast",
+      "soy sauce",
+      "vegetables",
+      "garlic",
+      "ginger",
+      "sesame oil",
+      "rice"
+    ],
+    "instructions": [
+      "Gather all ingredients: chicken breast, soy sauce, vegetables, garlic, ginger.",
+      "Slice chicken into strips.",
+      "Stir fry chicken in sesame oil.",
+      "Add minced garlic and ginger.",
+      "Pour soy sauce and cook until vegetables tender.",
+      "Serve over rice.",
+      "Serve immediately. Serves 4."
+    ],
+    "tags": [
+      "quick",
+      "healthy",
+      "protein"
+    ],
+    "cuisine": "Asian",
+    "category": "main",
+    "image_url": ""
+  },
+  {
+    "id": "bootstrap_008",
+    "source": "Curated (facts), MyFridge (content)",
+    "name": "Grilled Cheese Sandwich",
+    "description": "A delicious American recipe with bread, cheese, butter and more. Ready in 5 minutes!",
+    "prep_time": 2,
+    "cook_time": 5,
+    "total_time": 7,
+    "servings": 1,
+    "difficulty": "easy",
+    "ingredients": [
+      "bread",
+      "cheese",
+      "butter"
+    ],
+    "instructions": [
+      "Gather all ingredients: bread, cheese, butter.",
+      "Butter outside of bread slices.",
+      "Place cheese between slices.",
+      "Flip and cook other side.",
+      "Serve hot.",
+      "Serve immediately. Serves 1."
+    ],
+    "tags": [
+      "quick",
+      "comfort-food",
+      "kid-friendly"
+    ],
+    "cuisine": "American",
+    "category": "main",
+    "image_url": ""
+  },
+  {
+    "id": "bootstrap_009",
+    "source": "Curated (facts), MyFridge (content)",
+    "name": "Caesar Salad",
+    "description": "A delicious Italian recipe with romaine lettuce, caesar dressing, parmesan cheese and more. Ready in 0 minutes!",
+    "prep_time": 10,
+    "cook_time": 0,
+    "total_time": 10,
+    "servings": 4,
+    "difficulty": "easy",
+    "ingredients": [
+      "romaine lettuce",
+      "caesar dressing",
+      "parmesan cheese",
+      "croutons",
+      "lemon"
+    ],
+    "instructions": [
+      "Gather all ingredients: romaine lettuce, caesar dressing, parmesan cheese, croutons, lemon.",
+      "Wash and chop romaine.",
+      "Add croutons.",
+      "Serve immediately. Serves 4."
+    ],
+    "tags": [
+      "no-cook",
+      "healthy",
+      "side-dish"
+    ],
+    "cuisine": "Italian",
+    "category": "salad",
+    "image_url": ""
+  },
+  {
+    "id": "bootstrap_010",
+    "source": "Curated (facts), MyFridge (content)",
+    "name": "Tacos",
+    "description": "A delicious Mexican recipe with ground beef, taco seasoning, tortillas and more. Ready in 15 minutes!",
+    "prep_time": 10,
+    "cook_time": 15,
+    "total_time": 25,
+    "servings": 4,
+    "difficulty": "medium",
+    "ingredients": [
+      "ground beef",
+      "taco seasoning",
+      "tortillas",
+      "lettuce",
+      "tomato",
+      "cheese",
+      "sour cream"
+    ],
+    "instructions": [
+      "Gather all ingredients: ground beef, taco seasoning, tortillas, lettuce, tomato.",
+      "Add taco seasoning and water.",
+      "Simmer until thickened.",
+      "Serve immediately. Serves 4."
+    ],
+    "tags": [
+      "quick",
+      "family-friendly",
+      "customizable"
+    ],
+    "cuisine": "Mexican",
+    "category": "main",
+    "image_url": ""
   }
 ]

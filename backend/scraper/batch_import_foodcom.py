@@ -65,20 +65,32 @@ class FoodComImporter:
     
     def _normalize_name(self, name: str) -> str:
         """Normalize recipe name for duplicate detection."""
+        if not name:
+            return ""
+        
         # Remove special characters, lowercase, remove extra spaces
         normalized = re.sub(r'[^\w\s]', '', name.lower())
         normalized = re.sub(r'\s+', ' ', normalized).strip()
+        
+        # Return empty if normalization results in very short string
+        if len(normalized) < 3:
+            return ""
+        
         return normalized
     
     def is_duplicate(self, recipe_name: str, recipe_id: str) -> bool:
         """Check if recipe is a duplicate."""
+        # Skip validation if name is empty/too short
+        if not recipe_name or len(recipe_name.strip()) < 3:
+            return False  # Let validation handle it later
+        
         # Check by ID first
         if recipe_id in self.existing_ids:
             return True
         
         # Check by normalized name
         normalized_name = self._normalize_name(recipe_name)
-        if normalized_name in self.existing_names:
+        if normalized_name and normalized_name in self.existing_names:
             return True
         
         return False
@@ -170,7 +182,7 @@ class FoodComImporter:
             print(f"⚠️ Error parsing row: {e}")
             return None
     
-    def import_batch(self, csv_path: str, limit: int = 1000, use_ai: bool = False):
+    def import_batch(self, csv_path: str, limit: int = 1000, use_ai: bool = False, debug: bool = False):
         """
         Import recipes from Food.com CSV.
         
@@ -178,6 +190,7 @@ class FoodComImporter:
             csv_path: Path to RAW_recipes.csv
             limit: Maximum number of recipes to import
             use_ai: Whether to use AI for rewriting (slower but better)
+            debug: Show detailed error messages for skipped recipes
         """
         if not os.path.exists(csv_path):
             print(f"❌ CSV file not found: {csv_path}")
@@ -192,33 +205,68 @@ class FoodComImporter:
         print(f"📁 Reading: {csv_path}")
         print(f"🎯 Target: {limit} new recipes")
         print(f"🤖 AI rewriting: {'Enabled' if use_ai else 'Simple mode (faster)'}")
+        print(f"🐛 Debug mode: {'Enabled' if debug else 'Disabled'}")
         
         new_recipes = []
+        rows_checked = 0
+        max_rows_to_check = limit * 20  # Check at most 20x the limit
         
         try:
             with open(csv_path, 'r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
                 
                 for i, row in enumerate(reader):
+                    rows_checked += 1
+                    
                     # Stop if we've reached limit
                     if len(new_recipes) >= limit:
+                        print(f"✅ Reached target of {limit} recipes!")
                         break
                     
-                    # Progress update every 100 rows
-                    if i % 100 == 0 and i > 0:
-                        print(f"📊 Processed {i} rows, imported {len(new_recipes)} recipes, found {self.stats['duplicates']} duplicates")
+                    # Stop if we've checked too many rows without success
+                    if rows_checked >= max_rows_to_check and len(new_recipes) < limit // 10:
+                        print(f"⚠️ Checked {rows_checked} rows but only found {len(new_recipes)} good recipes.")
+                        print(f"   The dataset might have quality issues. Stopping early.")
+                        break
+                    
+                    # Progress update every 500 rows (less spam)
+                    if rows_checked % 500 == 0:
+                        print(f"📊 Checked {rows_checked} rows → imported {len(new_recipes)}, duplicates {self.stats['duplicates']}, errors {self.stats['errors']}")
                     
                     # Parse row
                     raw_recipe = self.parse_foodcom_row(row)
                     if not raw_recipe:
                         self.stats['errors'] += 1
+                        if debug and i < 10:
+                            print(f"  ⚠️ Row {i}: Failed to parse")
                         continue
                     
                     self.stats['processed'] += 1
                     
+                    # Validate recipe has required data
+                    if not raw_recipe.get('name') or len(raw_recipe.get('name', '').strip()) < 3:
+                        self.stats['errors'] += 1
+                        if debug and i < 10:
+                            print(f"  ⚠️ Row {i}: Bad name '{raw_recipe.get('name', '')}'")
+                        continue
+                    
+                    if not raw_recipe.get('ingredients') or len(raw_recipe.get('ingredients', [])) < 2:
+                        self.stats['errors'] += 1
+                        if debug and i < 10:
+                            print(f"  ⚠️ Row {i}: {raw_recipe['name']} - Not enough ingredients ({len(raw_recipe.get('ingredients', []))})")
+                        continue
+                    
+                    if not raw_recipe.get('steps') or len(raw_recipe.get('steps', [])) < 2:
+                        self.stats['errors'] += 1
+                        if debug and i < 10:
+                            print(f"  ⚠️ Row {i}: {raw_recipe['name']} - Not enough steps ({len(raw_recipe.get('steps', []))})")
+                        continue
+                    
                     # Check for duplicates
                     if self.is_duplicate(raw_recipe['name'], raw_recipe['id']):
                         self.stats['duplicates'] += 1
+                        if debug and i < 10:
+                            print(f"  🔄 Row {i}: {raw_recipe['name']} - Duplicate")
                         continue
                     
                     # Create legal recipe
@@ -283,6 +331,7 @@ def main():
     parser.add_argument('--limit', type=int, default=1000, help='Number of recipes to import (default: 1000)')
     parser.add_argument('--csv', type=str, default=None, help='Path to RAW_recipes.csv')
     parser.add_argument('--use-ai', action='store_true', help='Use AI for rewriting (slower but better quality)')
+    parser.add_argument('--debug', action='store_true', help='Show detailed error messages for first 10 skipped recipes')
     args = parser.parse_args()
     
     # Setup paths
@@ -305,7 +354,7 @@ def main():
     importer.load_existing_recipes(str(db_path))
     
     # Import batch
-    new_recipes = importer.import_batch(csv_path, limit=args.limit, use_ai=args.use_ai)
+    new_recipes = importer.import_batch(csv_path, limit=args.limit, use_ai=args.use_ai, debug=args.debug)
     
     if new_recipes:
         # Save to database
