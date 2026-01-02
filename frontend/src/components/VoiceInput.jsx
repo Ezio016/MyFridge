@@ -112,7 +112,7 @@ function VoiceInput({ onTranscript, onItemsParsed, onError }) {
         setError('⏱️ Parsing took too long. Server might be waking up. Try again!')
       } else {
         console.error('Parse error:', err)
-        setError('Could not parse your input. Try again!')
+        setError(`❌ Parse failed: ${err.message}. Check if server is running.`)
       }
     } finally {
       setIsParsing(false)
