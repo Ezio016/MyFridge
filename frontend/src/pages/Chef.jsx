@@ -67,8 +67,21 @@ function Chef() {
       setMode(MODE.RECIPES)
     } catch (err) {
       console.error('❌ Chef error:', err)
-      console.error('Error details:', err.message, err.stack)
-      alert(`Error: ${err.message || 'Connection failed'}. Try again or check if your GROQ_API_KEY is set.`)
+      console.error('Error message:', err.message)
+      console.error('Error stack:', err.stack)
+      
+      let errorMsg = 'Unknown error'
+      if (err.message) {
+        errorMsg = err.message
+      } else if (typeof err === 'string') {
+        errorMsg = err
+      } else if (err.detail) {
+        errorMsg = err.detail
+      } else {
+        errorMsg = JSON.stringify(err)
+      }
+      
+      alert(`Chef Error: ${errorMsg}\n\nCheck the console (F12) for more details.`)
       setMode(MODE.HOME)
     } finally {
       setLoading(false)
