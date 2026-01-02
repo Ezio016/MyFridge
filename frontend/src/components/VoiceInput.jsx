@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Mic, MicOff, Loader, X } from 'lucide-react'
+import { Mic, MicOff, Loader, X, Edit2, Check } from 'lucide-react'
 import { inventoryAPI } from '../api/client'
 import styles from './VoiceInput.module.css'
 
@@ -9,6 +9,8 @@ function VoiceInput({ onItemsParsed }) {
   const [error, setError] = useState(null)
   const [isParsing, setIsParsing] = useState(false)
   const [itemsList, setItemsList] = useState([])
+  const [editingIndex, setEditingIndex] = useState(null)
+  const [editForm, setEditForm] = useState({})
   const recognitionRef = useRef(null)
 
   useEffect(() => {
@@ -121,16 +123,51 @@ function VoiceInput({ onItemsParsed }) {
 
   const removeItem = (index) => {
     setItemsList(prev => prev.filter((_, i) => i !== index))
+    if (editingIndex === index) {
+      setEditingIndex(null)
+      setEditForm({})
+    }
   }
 
   const clearAll = () => {
     setItemsList([])
+    setEditingIndex(null)
+    setEditForm({})
+  }
+
+  const startEditing = (index) => {
+    setEditingIndex(index)
+    setEditForm({ ...itemsList[index] })
+  }
+
+  const cancelEditing = () => {
+    setEditingIndex(null)
+    setEditForm({})
+  }
+
+  const saveEdit = () => {
+    if (editingIndex !== null) {
+      setItemsList(prev => prev.map((item, i) => 
+        i === editingIndex ? editForm : item
+      ))
+      setEditingIndex(null)
+      setEditForm({})
+    }
+  }
+
+  const handleEditChange = (field, value) => {
+    setEditForm(prev => ({
+      ...prev,
+      [field]: field === 'quantity' ? parseFloat(value) || 0 : value
+    }))
   }
 
   const submitAllItems = () => {
     if (onItemsParsed && itemsList.length > 0) {
       onItemsParsed(itemsList)
       setItemsList([]) // Clear after submit
+      setEditingIndex(null)
+      setEditForm({})
     }
   }
 
@@ -187,16 +224,83 @@ function VoiceInput({ onItemsParsed }) {
           <div className={styles.items}>
             {itemsList.map((item, index) => (
               <div key={index} className={styles.item}>
-                <span className={styles.itemText}>
-                  {item.quantity} {item.unit} of {item.name}
-                </span>
-                <button 
-                  className={styles.removeBtn} 
-                  onClick={() => removeItem(index)}
-                  title="Remove"
-                >
-                  <X size={16} />
-                </button>
+                {editingIndex === index ? (
+                  // Edit Mode
+                  <div className={styles.editForm}>
+                    <input
+                      type="number"
+                      className={styles.editInput}
+                      value={editForm.quantity || ''}
+                      onChange={(e) => handleEditChange('quantity', e.target.value)}
+                      placeholder="Qty"
+                      min="0.1"
+                      step="0.1"
+                    />
+                    <select
+                      className={styles.editSelect}
+                      value={editForm.unit || 'pieces'}
+                      onChange={(e) => handleEditChange('unit', e.target.value)}
+                    >
+                      <option value="pieces">pieces</option>
+                      <option value="lb">lb</option>
+                      <option value="kg">kg</option>
+                      <option value="g">g</option>
+                      <option value="L">L</option>
+                      <option value="ml">ml</option>
+                      <option value="cups">cups</option>
+                      <option value="cartons">cartons</option>
+                      <option value="bottles">bottles</option>
+                      <option value="cans">cans</option>
+                      <option value="bags">bags</option>
+                      <option value="bunches">bunches</option>
+                      <option value="slices">slices</option>
+                    </select>
+                    <input
+                      type="text"
+                      className={styles.editInput}
+                      value={editForm.name || ''}
+                      onChange={(e) => handleEditChange('name', e.target.value)}
+                      placeholder="Item name"
+                    />
+                    <button 
+                      className={styles.saveBtn}
+                      onClick={saveEdit}
+                      title="Save"
+                    >
+                      <Check size={16} />
+                    </button>
+                    <button 
+                      className={styles.cancelBtn}
+                      onClick={cancelEditing}
+                      title="Cancel"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  // View Mode
+                  <>
+                    <span className={styles.itemText}>
+                      {item.quantity} {item.unit} of {item.name}
+                    </span>
+                    <div className={styles.itemActions}>
+                      <button 
+                        className={styles.editBtn}
+                        onClick={() => startEditing(index)}
+                        title="Edit"
+                      >
+                        <Edit2 size={14} />
+                      </button>
+                      <button 
+                        className={styles.removeBtn} 
+                        onClick={() => removeItem(index)}
+                        title="Remove"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>
