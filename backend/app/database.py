@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-# Use SQLite for demo, easy to switch to PostgreSQL later
+# Get database URL from environment
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./myfridge.db")
 
 # Handle SQLite-specific settings
@@ -13,7 +13,13 @@ if DATABASE_URL.startswith("sqlite"):
         connect_args={"check_same_thread": False}
     )
 else:
-    engine = create_engine(DATABASE_URL)
+    # PostgreSQL connection with pooling
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,  # Verify connections before using
+        pool_size=5,         # Number of permanent connections
+        max_overflow=10      # Extra connections if needed
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
