@@ -3,6 +3,15 @@ import { Mic, MicOff, Loader, X, Edit2, Check } from 'lucide-react'
 import { inventoryAPI } from '../api/client'
 import styles from './VoiceInput.module.css'
 
+const getCategoryEmoji = (category) => {
+  const emojis = {
+    dairy: '🥛', meat: '🥩', seafood: '🐟', vegetable: '🥬',
+    fruit: '🍎', grain: '🍞', beverage: '🥤', condiment: '🧂',
+    snack: '🍿', leftover: '🍱', other: '📦'
+  }
+  return emojis[category] || '📦'
+}
+
 function VoiceInput({ onItemsParsed }) {
   const [isListening, setIsListening] = useState(false)
   const [transcript, setTranscript] = useState('')
@@ -140,7 +149,10 @@ function VoiceInput({ onItemsParsed }) {
     setEditValues({
       name: itemsList[index].name,
       quantity: itemsList[index].quantity,
-      unit: itemsList[index].unit
+      unit: itemsList[index].unit,
+      location: itemsList[index].location || 'fridge',
+      category: itemsList[index].category || 'other',
+      expiration_date: itemsList[index].expiration_date || ''
     })
   }
 
@@ -223,53 +235,104 @@ function VoiceInput({ onItemsParsed }) {
               <div key={index} className={styles.item}>
                 {editingIndex === index ? (
                   // Edit mode
-                  <>
-                    <input
-                      type="number"
-                      className={styles.editInput}
-                      value={editValues.quantity}
-                      onChange={(e) => setEditValues({...editValues, quantity: parseFloat(e.target.value) || 0})}
-                      step="0.1"
-                      min="0.1"
-                    />
-                    <select
-                      className={styles.editSelect}
-                      value={editValues.unit}
-                      onChange={(e) => setEditValues({...editValues, unit: e.target.value})}
-                    >
-                      <option value="pieces">pieces</option>
-                      <option value="lb">lb</option>
-                      <option value="kg">kg</option>
-                      <option value="g">g</option>
-                      <option value="L">L</option>
-                      <option value="ml">ml</option>
-                      <option value="cups">cups</option>
-                      <option value="cartons">cartons</option>
-                      <option value="bottles">bottles</option>
-                      <option value="cans">cans</option>
-                      <option value="slices">slices</option>
-                      <option value="bunches">bunches</option>
-                      <option value="bags">bags</option>
-                    </select>
-                    <input
-                      type="text"
-                      className={styles.editInputName}
-                      value={editValues.name}
-                      onChange={(e) => setEditValues({...editValues, name: e.target.value})}
-                    />
-                    <button className={styles.saveBtn} onClick={saveEdit} title="Save">
-                      <Check size={14} />
-                    </button>
-                    <button className={styles.cancelBtn} onClick={cancelEdit} title="Cancel">
-                      <X size={14} />
-                    </button>
-                  </>
+                  <div className={styles.editForm}>
+                    <div className={styles.editRow}>
+                      <input
+                        type="number"
+                        className={styles.editInput}
+                        value={editValues.quantity}
+                        onChange={(e) => setEditValues({...editValues, quantity: parseFloat(e.target.value) || 0})}
+                        step="0.1"
+                        min="0.1"
+                        placeholder="Qty"
+                      />
+                      <select
+                        className={styles.editSelect}
+                        value={editValues.unit}
+                        onChange={(e) => setEditValues({...editValues, unit: e.target.value})}
+                      >
+                        <option value="pieces">pieces</option>
+                        <option value="lb">lb</option>
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                        <option value="L">L</option>
+                        <option value="ml">ml</option>
+                        <option value="cups">cups</option>
+                        <option value="cartons">cartons</option>
+                        <option value="bottles">bottles</option>
+                        <option value="cans">cans</option>
+                        <option value="slices">slices</option>
+                        <option value="bunches">bunches</option>
+                        <option value="bags">bags</option>
+                      </select>
+                      <input
+                        type="text"
+                        className={styles.editInputName}
+                        value={editValues.name}
+                        onChange={(e) => setEditValues({...editValues, name: e.target.value})}
+                        placeholder="Item name"
+                      />
+                    </div>
+                    <div className={styles.editRow}>
+                      <select
+                        className={styles.editSelectWide}
+                        value={editValues.location}
+                        onChange={(e) => setEditValues({...editValues, location: e.target.value})}
+                      >
+                        <option value="fridge">🧊 Fridge</option>
+                        <option value="freezer">❄️ Freezer</option>
+                        <option value="pantry">📦 Pantry</option>
+                      </select>
+                      <select
+                        className={styles.editSelectWide}
+                        value={editValues.category}
+                        onChange={(e) => setEditValues({...editValues, category: e.target.value})}
+                      >
+                        <option value="dairy">🥛 Dairy</option>
+                        <option value="meat">🥩 Meat</option>
+                        <option value="seafood">🐟 Seafood</option>
+                        <option value="vegetable">🥬 Vegetable</option>
+                        <option value="fruit">🍎 Fruit</option>
+                        <option value="grain">🍞 Grain</option>
+                        <option value="beverage">🥤 Beverage</option>
+                        <option value="condiment">🧂 Condiment</option>
+                        <option value="snack">🍿 Snack</option>
+                        <option value="other">📦 Other</option>
+                      </select>
+                      <input
+                        type="date"
+                        className={styles.editInputDate}
+                        value={editValues.expiration_date || ''}
+                        onChange={(e) => setEditValues({...editValues, expiration_date: e.target.value})}
+                        placeholder="Expiry"
+                      />
+                    </div>
+                    <div className={styles.editActions}>
+                      <button className={styles.saveBtn} onClick={saveEdit} title="Save">
+                        <Check size={14} /> Save
+                      </button>
+                      <button className={styles.cancelBtn} onClick={cancelEdit} title="Cancel">
+                        <X size={14} /> Cancel
+                      </button>
+                    </div>
+                  </div>
                 ) : (
                   // View mode
                   <>
-                    <span className={styles.itemText}>
-                      {item.quantity} {item.unit} of {item.name}
-                    </span>
+                    <div className={styles.itemInfo}>
+                      <span className={styles.itemName}>
+                        {item.quantity} {item.unit} of <strong>{item.name}</strong>
+                      </span>
+                      <div className={styles.itemMeta}>
+                        <span className={styles.badge}>
+                          {item.location === 'freezer' ? '❄️ Freezer' : item.location === 'pantry' ? '📦 Pantry' : '🧊 Fridge'}
+                        </span>
+                        <span className={styles.badge}>{getCategoryEmoji(item.category)} {item.category}</span>
+                        {item.expiration_date && (
+                          <span className={styles.badgeExpiry}>📅 {item.expiration_date}</span>
+                        )}
+                      </div>
+                    </div>
                     <div className={styles.itemActions}>
                       <button 
                         className={styles.editBtn}

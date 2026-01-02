@@ -180,8 +180,8 @@
 .item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  gap: 0.75rem;
   padding: 0.75rem;
   background: var(--bg-secondary);
   border-radius: var(--radius-sm);
@@ -193,10 +193,45 @@
   border-color: var(--accent);
 }
 
-.itemText {
+.itemInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.itemName {
   font-size: 0.9rem;
   color: var(--text-secondary);
-  flex: 1;
+}
+
+.itemName strong {
+  color: var(--text-primary);
+}
+
+.itemMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.4rem;
+  background: var(--bg-card);
+  border: 1px solid var(--wood-dark);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
+.badgeExpiry {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.4rem;
+  background: var(--warning);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
 }
 
 .itemActions {
@@ -239,15 +274,48 @@
   background: var(--fresh);
   color: white;
   border-color: var(--fresh);
+  width: auto;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .saveBtn:hover {
   background: #16a34a;
 }
 
-/* Edit inputs */
+.cancelBtn {
+  width: auto;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Edit form */
+.editForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.editRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .editInput,
-.editInputName {
+.editInputName,
+.editInputDate {
   padding: 0.4rem 0.5rem;
   border: 1px solid var(--wood-dark);
   border-radius: var(--radius-sm);
@@ -265,6 +333,11 @@
   min-width: 100px;
 }
 
+.editInputDate {
+  flex: 1;
+  min-width: 120px;
+}
+
 .editSelect {
   padding: 0.4rem;
   border: 1px solid var(--wood-dark);
@@ -273,6 +346,22 @@
   color: var(--text-primary);
   font-size: 0.85rem;
   width: 90px;
+}
+
+.editSelectWide {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--wood-dark);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  flex: 1;
+}
+
+.editActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .submitBtn {
