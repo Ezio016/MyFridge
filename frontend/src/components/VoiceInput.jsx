@@ -20,45 +20,50 @@ function VoiceInput({ onTranscript, onItemsParsed }) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     const recognition = new SpeechRecognition()
     
-    recognition.continuous = false
+    recognition.continuous = true  // Keep listening
     recognition.interimResults = true
     recognition.lang = 'en-US'
+    recognition.maxAlternatives = 1
+
+    let finalTranscriptText = ''
 
     recognition.onstart = () => {
       setIsListening(true)
       setError(null)
       setTranscript('')
+      finalTranscriptText = ''
     }
 
     recognition.onresult = (event) => {
       let interimTranscript = ''
-      let finalTranscript = ''
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcriptPiece = event.results[i][0].transcript
         if (event.results[i].isFinal) {
-          finalTranscript += transcriptPiece + ' '
+          finalTranscriptText += transcriptPiece + ' '
         } else {
           interimTranscript += transcriptPiece
         }
       }
 
-      const currentTranscript = finalTranscript || interimTranscript
+      const currentTranscript = finalTranscriptText + interimTranscript
       setTranscript(currentTranscript)
       if (onTranscript) onTranscript(currentTranscript)
     }
 
     recognition.onerror = (event) => {
       console.error('Speech recognition error:', event.error)
-      setError(`Error: ${event.error}`)
+      if (event.error !== 'aborted') {
+        setError(`Error: ${event.error}`)
+      }
       setIsListening(false)
     }
 
     recognition.onend = () => {
       setIsListening(false)
       // If we have a transcript, parse it
-      if (transcript.trim()) {
-        parseVoiceInput(transcript)
+      if (finalTranscriptText.trim()) {
+        parseVoiceInput(finalTranscriptText)
       }
     }
 
@@ -66,10 +71,14 @@ function VoiceInput({ onTranscript, onItemsParsed }) {
 
     return () => {
       if (recognitionRef.current) {
-        recognitionRef.current.abort()
+        try {
+          recognitionRef.current.abort()
+        } catch (e) {
+          // Ignore abort errors
+        }
       }
     }
-  }, [transcript])
+  }, [])
 
   const parseVoiceInput = async (text) => {
     setIsParsing(true)
@@ -128,11 +137,11 @@ function VoiceInput({ onTranscript, onItemsParsed }) {
       
       <div className={styles.status}>
         {isParsing ? (
-          <span className={styles.parsing}>🧠 Parsing...</span>
+          <span className={styles.parsing}>🧠 Parsing your items...</span>
         ) : isListening ? (
-          <span className={styles.active}>🎤 Listening... Speak now!</span>
+          <span className={styles.active}>🎤 Listening... Speak clearly, then click mic again when done!</span>
         ) : (
-          <span className={styles.idle}>Click mic to add items by voice</span>
+          <span className={styles.idle}>Click mic and speak what items you have</span>
         )}
       </div>
 
