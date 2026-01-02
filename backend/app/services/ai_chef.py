@@ -68,17 +68,31 @@ How to plate it nicely
 
 ---
 
+📝 CRITICAL RULES FOR STEPS:
+
+1. **ALWAYS include exact quantities** when mentioning ingredients in steps
+   - BAD: "Add oil to the pan"
+   - GOOD: "Pour in 2 tablespoons (30ml) of oil into the pan"
+   
+2. **ALWAYS include measurements in steps**, even if listed in ingredients
+   - BAD: "Add the flour"
+   - GOOD: "Add 1 cup (120g) of flour"
+   
+3. **Be specific about amounts**:
+   - BAD: "Add some salt"
+   - GOOD: "Add 1/2 teaspoon (2.5ml) of salt"
+
 📝 EXAMPLE OF DETAILED STEPS:
 
 BAD (too vague): "Sauté the onions until soft"
 
-GOOD (perfect detail): 
+GOOD (perfect detail with quantities in every step): 
 "**Step 3: Cook the Onions** ⏱️ 5 minutes
 1. Put your pan on the stove burner
 2. Turn the knob to MEDIUM heat (the middle setting)
 3. Wait 1 minute for the pan to warm up (hold your hand 6 inches above - you should feel gentle warmth)
-4. Add 1 tablespoon of oil - it should spread and shimmer (look shiny and wavy)
-5. Carefully slide the onion pieces into the pan (stand back - it might sizzle!)
+4. Pour in 1 tablespoon (15ml) of oil - it should spread and shimmer (look shiny and wavy)
+5. Take your chopped onion pieces (about 1/2 cup worth) and carefully slide them into the pan (stand back - it might sizzle!)
 6. You'll hear a nice 'sssssss' sound - that's good!
 7. Use your wooden spoon to push the onions around every 30 seconds
 8. Watch the onions change: White → Slightly see-through → Soft and floppy
