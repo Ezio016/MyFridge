@@ -103,12 +103,12 @@ function Chef() {
     }
 
     if (type === 'lightning') {
-      prompt += `Give me 10 SUPER FAST recipes (UNDER 5 MINUTES, no cooking required or microwave only).
+      prompt += `Give me 5 SUPER FAST recipes (UNDER 5 MINUTES, no cooking required or microwave only).
 
 Examples: toast, sandwiches, smoothies, overnight oats, wraps, salads, yogurt bowls, quick snacks.
 Must include at least 2 of my main ingredients. Be creative and diverse!`
     } else {
-      prompt += `Give me 10 recipes that take 15-45 minutes. More substantial meals with real cooking.
+      prompt += `Give me 5 recipes that take 15-45 minutes. More substantial meals with real cooking.
 
 Examples: pasta dishes, stir fry, rice bowls, grilled items, soups, baked dishes, curries.
 Must include at least 2 of my main ingredients. Mix of what I can make and what needs extra items. Be creative!`
