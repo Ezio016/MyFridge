@@ -110,9 +110,16 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
     }
   }
 
-  const handleVoiceItems = async (items) => {
+  const handleVoiceItems = async (items, error) => {
+    console.log('Voice parsing result:', { items, error })
+    
+    if (error) {
+      alert(`❌ Error: ${error}`)
+      return
+    }
+    
     if (!items || items.length === 0) {
-      alert('No items detected. Please try again!')
+      alert('❌ No food items detected in your speech. Try being more specific:\n\nExample: "I have 2 apples, milk, and 3 chicken breasts"')
       return
     }
 
@@ -122,11 +129,11 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
       for (const item of items) {
         await onSubmit(item)
       }
-      alert(`✅ Added ${items.length} item(s) to your fridge!`)
+      alert(`✅ Success! Added ${items.length} item(s) to your fridge!`)
       onClose()
     } catch (err) {
       console.error('Failed to add items:', err)
-      alert('Failed to add some items. Please try again.')
+      alert('❌ Failed to add some items. Please try again.')
     } finally {
       setLoading(false)
     }

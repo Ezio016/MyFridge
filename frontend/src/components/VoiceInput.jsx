@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Mic, MicOff, Loader } from 'lucide-react'
 import styles from './VoiceInput.module.css'
 
-function VoiceInput({ onTranscript, onItemsParsed }) {
+function VoiceInput({ onTranscript, onItemsParsed, onError }) {
   const [isListening, setIsListening] = useState(false)
   const [transcript, setTranscript] = useState('')
   const [error, setError] = useState(null)
@@ -102,9 +102,11 @@ function VoiceInput({ onTranscript, onItemsParsed }) {
 
       const result = await response.json()
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1)
-      console.log(`✅ Parsed in ${elapsed}s`)
+      console.log(`✅ Parsed in ${elapsed}s`, result)
       
-      if (onItemsParsed) onItemsParsed(result.items)
+      if (onItemsParsed) {
+        onItemsParsed(result.items || [], result.error)
+      }
     } catch (err) {
       if (err.name === 'AbortError') {
         setError('⏱️ Parsing took too long. Server might be waking up. Try again!')

@@ -219,63 +219,67 @@ Make it fun and encouraging! I can do this! 💪"""
 
 async def parse_voice_to_items(text: str) -> dict:
     """Parse voice input text into structured fridge items using AI."""
+    print(f"🎤 Parsing voice input: '{text}'")
+    
     try:
         groq_client = get_groq_client()
-    except ValueError:
+    except ValueError as e:
+        print(f"❌ Groq client error: {e}")
         return {
             "items": [],
             "error": "AI not configured. Please add items manually."
         }
     
-    prompt = f"""Parse this voice input into structured fridge items. Extract ALL items mentioned.
+    # Simplified, more direct prompt
+    prompt = f"""You are a food item parser. Extract food items from this text and return ONLY valid JSON.
 
-Voice input: "{text}"
+Text: "{text}"
 
-For each item, extract:
-- name (the item name)
-- quantity (number, default to 1 if not mentioned)
-- unit (pieces/g/kg/ml/L/cups/etc, default to "pieces")
-- location (fridge/freezer/pantry, default to "fridge")
-- category (dairy/meat/seafood/vegetable/fruit/grain/beverage/condiment/snack/leftover/other)
-- expiration_date (YYYY-MM-DD format if mentioned, otherwise null)
-- notes (any additional info)
-
-Respond ONLY with valid JSON in this exact format:
+Return this exact JSON format:
 {{
   "items": [
     {{
-      "name": "Milk",
-      "quantity": 2,
-      "unit": "L",
+      "name": "item name",
+      "quantity": 1,
+      "unit": "pieces",
       "location": "fridge",
-      "category": "dairy",
-      "expiration_date": "2025-01-15",
-      "notes": "Whole milk"
+      "category": "other",
+      "expiration_date": null,
+      "notes": null
     }}
   ]
 }}
 
-Examples:
-- "I have 2 apples and 3 bananas" → 2 items (apples, bananas)
-- "Add milk expiring in 5 days" → 1 item with expiry date 5 days from today
-- "I got chicken from the freezer" → 1 item, location=freezer
-- "Half a loaf of bread in pantry" → 1 item, quantity=0.5, unit=loaves
-
-Return ONLY the JSON, no other text."""
+Rules:
+- Extract ALL food items mentioned
+- Use simple category: dairy, meat, seafood, vegetable, fruit, grain, beverage, condiment, snack, leftover, other
+- Default quantity to 1 if not mentioned
+- Default unit to "pieces"
+- Default location to "fridge"
+- Return ONLY JSON, no explanation"""
 
     try:
+        print("🤖 Sending to Groq AI...")
         response = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",  # Same fast model as recipes!
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,  # Lower for fastest, most consistent parsing
-            max_tokens=500,  # Reduced for faster response
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "system", "content": "You are a JSON parser. Always return valid JSON only."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.1,
+            max_tokens=800,
         )
         
         result_text = response.choices[0].message.content.strip()
+        print(f"📥 AI Response: {result_text[:200]}...")
         
         # Try to extract JSON if there's extra text
         import json
         import re
+        
+        # Remove markdown code blocks if present
+        result_text = re.sub(r'```json\s*', '', result_text)
+        result_text = re.sub(r'```\s*', '', result_text)
         
         # Find JSON in the response
         json_match = re.search(r'\{.*\}', result_text, re.DOTALL)
@@ -283,15 +287,28 @@ Return ONLY the JSON, no other text."""
             result_text = json_match.group(0)
         
         result = json.loads(result_text)
+        print(f"✅ Parsed {len(result.get('items', []))} items")
         
         # Validate structure
-        if "items" not in result:
+        if "items" not in result or not isinstance(result["items"], list):
+            print("⚠️ Invalid structure, no items array found")
             result = {"items": []}
+        
+        # Log items found
+        for item in result.get("items", []):
+            print(f"  - {item.get('name')}: {item.get('quantity')} {item.get('unit')}")
         
         return result
         
+    except json.JSONDecodeError as e:
+        print(f"❌ JSON parse error: {e}")
+        print(f"Raw response: {result_text}")
+        return {
+            "items": [],
+            "error": f"Invalid JSON from AI: {str(e)}"
+        }
     except Exception as e:
-        print(f"Voice parsing error: {e}")
+        print(f"❌ Voice parsing error: {e}")
         return {
             "items": [],
             "error": f"Could not parse input: {str(e)}"
