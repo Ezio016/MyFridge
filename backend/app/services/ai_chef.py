@@ -265,9 +265,9 @@ Return ONLY the JSON, no other text."""
 
     try:
         response = groq_client.chat.completions.create(
-            model="llama-3.3-70b-versatile",  # Faster, more accurate model
+            model="llama-3.1-8b-instant",  # Same fast model as recipes!
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,  # Even lower for fastest, most consistent parsing
+            temperature=0.1,  # Lower for fastest, most consistent parsing
             max_tokens=500,  # Reduced for faster response
         )
         
