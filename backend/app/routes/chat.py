@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..schemas import ChatMessage, ChatResponse
 from ..services import inventory_service
-from ..services.ai_chef import chat_with_chef, generate_meal_plan, suggest_quick_recipe
+from ..services.ai_chef import chat_with_chef, generate_meal_plan, suggest_recipes_from_fridge
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -44,7 +44,7 @@ async def get_quick_recipe(
 ):
     """Get a quick recipe suggestion."""
     inventory_summary = inventory_service.get_inventory_summary(db)
-    result = await suggest_quick_recipe(inventory_summary, meal_type)
+    result = await suggest_recipes_from_fridge(inventory_summary)
     
     return ChatResponse(
         response=result["response"],

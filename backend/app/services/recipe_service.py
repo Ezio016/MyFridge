@@ -12,8 +12,9 @@ class RecipeService:
     def load_recipes(self):
         """Load recipes from JSON file."""
         try:
+            # Go up two levels from app/services/ to backend/
             data_path = os.path.join(
-                os.path.dirname(os.path.dirname(__file__)),
+                os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                 'data',
                 'recipes.json'
             )
