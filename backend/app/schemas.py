@@ -69,7 +69,7 @@ class FridgeItemResponse(FridgeItemBase):
 
 class ChatMessage(BaseModel):
     """Schema for chat message."""
-    message: str = Field(..., min_length=1, max_length=1000)
+    message: str = Field(..., min_length=1, max_length=10000)
 
 
 class ChatResponse(BaseModel):
