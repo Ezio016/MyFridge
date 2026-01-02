@@ -171,7 +171,7 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
             <label htmlFor="name">Item Name *</label>
             <input

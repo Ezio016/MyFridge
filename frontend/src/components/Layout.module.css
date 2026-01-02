@@ -71,46 +71,59 @@
   color: var(--accent);
 }
 
-/* YummyTok button - prominent center */
-.yummyNav {
+/* Home button - BIG center button */
+.homeNav {
   position: relative;
-  margin-top: -15px;
+  margin-top: -25px;
 }
 
-.yummyIcon {
+.homeIcon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
   border-radius: 50%;
   color: white;
-  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.4);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
   transition: all 0.3s;
+  border: 3px solid var(--bg-secondary);
 }
 
-.yummyNav:hover .yummyIcon {
-  transform: scale(1.1);
+.homeNav:hover .homeIcon {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 8px 28px rgba(59, 130, 246, 0.6);
 }
 
-.yummyNav.active .yummyIcon {
-  animation: pulse 2s ease-in-out infinite;
+.homeNav.active .homeIcon {
+  animation: homePulse 2s ease-in-out infinite;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
 }
 
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 4px 16px rgba(236, 72, 153, 0.4); }
-  50% { box-shadow: 0 4px 24px rgba(236, 72, 153, 0.6); }
+@keyframes homePulse {
+  0%, 100% { 
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.7);
+    transform: scale(1.05);
+  }
 }
 
 @media (max-width: 640px) {
   .navItem {
-    padding: 0.4rem 0.5rem;
+    padding: 0.4rem 0.3rem;
     font-size: 0.6rem;
   }
   
-  .yummyIcon {
-    width: 46px;
-    height: 46px;
+  .homeIcon {
+    width: 58px;
+    height: 58px;
+  }
+  
+  .homeNav {
+    margin-top: -20px;
   }
 }

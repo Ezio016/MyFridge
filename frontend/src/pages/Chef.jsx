@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ChefHat, Clock, Compass, Flame, ArrowLeft, Check, Filter } from 'lucide-react'
-import { inventoryAPI, chatAPI } from '../api/client'
+import { inventoryAPI, chatAPI, recipeAPI } from '../api/client'
 import styles from './Chef.module.css'
 
 const MODE = {
@@ -43,45 +43,64 @@ function Chef() {
     setFilterExpiring(false)
 
     try {
-      const prompt = buildPrompt(type)
-      console.log('🎤 Sending prompt to Chef...')
+      console.log(`🍳 Loading ${type} recipes from database...`)
       
-      const response = await chatAPI.send(prompt)
-      console.log('✅ Got response:', response)
-      
-      if (!response || !response.response) {
-        throw new Error('No response from AI')
+      let response
+      if (type === 'lightning') {
+        // Get super quick recipes (under 15 min)
+        response = await recipeAPI.getQuick(15, 10)
+      } else {
+        // Get random recipes for exploration
+        response = await recipeAPI.getRandom(10)
       }
       
-      const parsedRecipes = parseRecipes(response.response)
-      console.log(`📋 Parsed ${parsedRecipes.length} recipes`)
-      
-      if (parsedRecipes.length === 0) {
-        console.error('No recipes parsed from:', response.response.substring(0, 500))
-        alert('Chef had trouble thinking of recipes. Try again!')
-        setMode(MODE.HOME)
-        return
+      if (!response || !response.recipes || response.recipes.length === 0) {
+        throw new Error('No recipes found in database')
       }
       
-      setRecipes(parsedRecipes)
+      console.log(`✅ Got ${response.recipes.length} recipes from database`)
+      
+      // Transform database recipes to match our UI format
+      const formattedRecipes = response.recipes.map((r, idx) => {
+        // Check which ingredients user has
+        const inventoryNames = inventory.map(i => i.name.toLowerCase())
+        const pantryStaples = ['salt', 'pepper', 'oil', 'olive oil', 'vegetable oil',  'butter', 'water', 'sugar', 'flour']
+        
+        const hasIngredient = r.ingredients.map(ing => {
+          const ingLower = ing.toLowerCase()
+          // Assume they have pantry staples
+          if (pantryStaples.some(staple => ingLower.includes(staple))) {
+            return true
+          }
+          // Check if in fridge
+          return inventoryNames.some(inv => 
+            ingLower.includes(inv) || inv.includes(ingLower.split(' ')[0])
+          )
+        })
+        
+        const missingCount = hasIngredient.filter(h => !h).length
+        
+        return {
+          id: r.id || `recipe_${idx}`,
+          name: r.name,
+          time: r.total_time || r.cook_time + r.prep_time,
+          level: r.difficulty || 'easy',
+          usesExpiring: false, // Could enhance this later
+          ingredients: r.ingredients,
+          hasIngredient,
+          missingCount,
+          steps: r.instructions,
+          description: r.description,
+          tags: r.tags || [],
+          image_url: r.image_url
+        }
+      })
+      
+      setRecipes(formattedRecipes)
       setMode(MODE.RECIPES)
     } catch (err) {
       console.error('❌ Chef error:', err)
-      console.error('Error message:', err.message)
-      console.error('Error stack:', err.stack)
-      
-      let errorMsg = 'Unknown error'
-      if (err.message) {
-        errorMsg = err.message
-      } else if (typeof err === 'string') {
-        errorMsg = err
-      } else if (err.detail) {
-        errorMsg = err.detail
-      } else {
-        errorMsg = JSON.stringify(err)
-      }
-      
-      alert(`Chef Error: ${errorMsg}\n\nCheck the console (F12) for more details.`)
+      alert(`Chef Error: ${err.message || 'Something went wrong'}. Check your connection!`)
       setMode(MODE.HOME)
     } finally {
       setLoading(false)

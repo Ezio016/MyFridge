@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
-import Home from './pages/Home'
+import Landing from './pages/Landing'
+import Fridge from './pages/Fridge'
 import Chef from './pages/Chef'
 import YummyTok from './pages/YummyTok'
 import Cart from './pages/Cart'
@@ -34,7 +35,8 @@ function App() {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/fridge" element={<Fridge />} />
         <Route path="/chef" element={<Chef />} />
         <Route 
           path="/yummytok" 

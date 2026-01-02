@@ -148,6 +148,52 @@ export const chatAPI = {
     fetchAPI(`/chat/quick-recipe?meal_type=${mealType}`),
 };
 
+// ============ Recipe API ============
+
+export const recipeAPI = {
+  /**
+   * Get all recipes
+   */
+  getAll: () => fetchAPI('/recipes/'),
+
+  /**
+   * Get a recipe by ID
+   */
+  getById: (id) => fetchAPI(`/recipes/${id}`),
+
+  /**
+   * Get random recipes for exploration
+   */
+  getRandom: (count = 5) => fetchAPI(`/recipes/random?count=${count}`),
+
+  /**
+   * Get quick recipes (under specified time)
+   */
+  getQuick: (maxTime = 15, limit = 10) => 
+    fetchAPI(`/recipes/quick?max_time=${maxTime}&limit=${limit}`),
+
+  /**
+   * Search recipes with filters
+   */
+  search: (filters) => fetchAPI('/recipes/search', {
+    method: 'POST',
+    body: JSON.stringify(filters),
+  }),
+
+  /**
+   * Find recipes by ingredients
+   */
+  byIngredients: (ingredients, limit = 10) => fetchAPI('/recipes/by-ingredients', {
+    method: 'POST',
+    body: JSON.stringify({ ingredients, limit }),
+  }),
+
+  /**
+   * Get recipes by tag
+   */
+  byTag: (tag, limit = 10) => fetchAPI(`/recipes/tags/${tag}?limit=${limit}`),
+};
+
 // ============ Health API ============
 
 export const healthAPI = {

@@ -17,8 +17,16 @@ def get_groq_client():
     return client
 
 
-SYSTEM_PROMPT = """You are an AI Chef assistant for a smart fridge app called MyFridge. 
-Your job is to help students cook delicious, practical meals using ingredients they have available.
+SYSTEM_PROMPT = """You are an AI Chef companion for MyFridge - a smart cooking assistant for students.
+
+YOUR ROLE:
+- Help users understand and modify real recipes from our database
+- Suggest ingredient substitutions when they're missing something
+- Guide them through cooking with encouragement and tips
+- Answer cooking questions in a friendly, patient way
+- Adapt recipes to dietary needs (vegetarian, gluten-free, etc.)
+
+YOUR APPROACH:
 
 🎯 YOUR TEACHING STYLE:
 You explain cooking like teaching a 5-year-old who has NEVER cooked before. Every single step must be:
@@ -213,22 +221,135 @@ Prioritize using items that are expiring soon! Make it fun and encouraging! 🎉
     return await chat_with_chef(prompt, inventory_summary)
 
 
-async def suggest_quick_recipe(inventory_summary: dict, meal_type: str = "any") -> dict:
-    """Suggest a quick recipe for a specific meal type."""
-    prompt = f"""Suggest one quick, easy {meal_type} recipe I can make right now with what's in my fridge.
-
-Please give me the FULL detailed recipe with:
-- Recipe name with emoji
-- All ingredients (mark ✅ for items from fridge)  
-- Kitchen tools I'll need
-- SUPER DETAILED step-by-step instructions (explain like I'm 5 years old and never cooked before!)
-- Exact times, temperatures, and what to look/smell/listen for
-- Tips and safety warnings
-- How to know when it's perfectly done
-
-Make it fun and encouraging! I can do this! 💪"""
+async def suggest_recipes_from_fridge(inventory_summary: dict) -> dict:
+    """Suggest recipes from database based on fridge contents using AI."""
+    from .recipe_service import get_recipe_service
     
-    return await chat_with_chef(prompt, inventory_summary)
+    recipe_service = get_recipe_service()
+    
+    # Extract ingredient names from inventory
+    ingredients = [item['name'] for item in inventory_summary['items']]
+    
+    if not ingredients:
+        return {
+            "response": "Your fridge is empty! Add some items and I'll suggest recipes you can make. 🥘",
+            "recipes": []
+        }
+    
+    # Get matching recipes from database
+    matching_recipes = recipe_service.get_recipes_by_ingredients(ingredients, limit=5)
+    
+    if not matching_recipes:
+        # Fallback to random recipes
+        matching_recipes = recipe_service.get_random_recipes(count=3)
+    
+    # Build AI response about these recipes
+    recipe_context = "\n\n".join([
+        f"**{r['name']}** ({r['total_time']} min)\n"
+        f"- {r['description']}\n"
+        f"- Tags: {', '.join(r['tags'][:3])}"
+        for r in matching_recipes
+    ])
+    
+    inventory_context = build_inventory_context(inventory_summary)
+    
+    prompt = f"""Based on the user's fridge contents and these available recipes from our database, 
+provide a friendly, encouraging message suggesting which recipes they should try.
+
+{inventory_context}
+
+Available recipes:
+{recipe_context}
+
+Mention:
+1. Which recipes they can make right now
+2. Which ingredients from their fridge match each recipe
+3. Any ingredient substitutions they could make
+4. Your personal recommendation for what to cook
+
+Be enthusiastic and helpful! 🎉"""
+    
+    try:
+        groq_client = get_groq_client()
+        response = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=1000,
+        )
+        
+        ai_message = response.choices[0].message.content
+        
+        return {
+            "response": ai_message,
+            "recipes": matching_recipes
+        }
+    except Exception as e:
+        return {
+            "response": f"Here are some recipes you can make with your ingredients! Check them out below. 👇",
+            "recipes": matching_recipes
+        }
+
+
+async def modify_recipe(recipe: dict, modification_request: str, user_preferences: dict = None) -> dict:
+    """Help user modify a recipe based on their needs."""
+    try:
+        groq_client = get_groq_client()
+    except ValueError as e:
+        return {
+            "response": "AI Chef is not configured. Please set up your GROQ_API_KEY.",
+            "modified_recipe": None
+        }
+    
+    recipe_text = f"""
+Recipe: {recipe['name']}
+Time: {recipe['total_time']} minutes
+Servings: {recipe['servings']}
+
+Ingredients:
+{chr(10).join(f'- {ing}' for ing in recipe['ingredients'])}
+
+Instructions:
+{chr(10).join(f'{i+1}. {step}' for i, step in enumerate(recipe['instructions']))}
+"""
+    
+    prompt = f"""A user wants to modify this recipe:
+
+{recipe_text}
+
+Their request: "{modification_request}"
+
+Please provide:
+1. A clear explanation of how to make this modification
+2. Updated ingredients list (if needed)
+3. Modified instructions (only the steps that change)
+4. Any tips or warnings about this modification
+
+Be helpful and encouraging! Make sure your suggestions are practical and safe."""
+    
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=1500,
+        )
+        
+        return {
+            "response": response.choices[0].message.content,
+            "original_recipe": recipe
+        }
+    except Exception as e:
+        return {
+            "response": f"Sorry, I couldn't help with that modification: {str(e)}",
+            "original_recipe": recipe
+        }
 
 
 async def parse_voice_to_items(text: str) -> dict:

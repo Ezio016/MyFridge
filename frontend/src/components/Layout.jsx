@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { Refrigerator, ChefHat, ShoppingCart, Sparkles, User } from 'lucide-react'
+import { Refrigerator, ChefHat, ShoppingCart, Sparkles, User, Home } from 'lucide-react'
 import styles from './Layout.module.css'
 
 function Layout({ children }) {
@@ -16,7 +16,7 @@ function Layout({ children }) {
       
       <nav className={styles.bottomNav}>
         <NavLink 
-          to="/" 
+          to="/fridge" 
           className={({ isActive }) => 
             `${styles.navItem} ${isActive ? styles.active : ''}`
           }
@@ -35,15 +35,26 @@ function Layout({ children }) {
           <span>Chef</span>
         </NavLink>
         
+        {/* Big Home Button in Center */}
+        <NavLink 
+          to="/" 
+          className={({ isActive }) => 
+            `${styles.navItem} ${styles.homeNav} ${isActive ? styles.active : ''}`
+          }
+        >
+          <div className={styles.homeIcon}>
+            <Home size={28} />
+          </div>
+          <span>Home</span>
+        </NavLink>
+        
         <NavLink 
           to="/yummytok" 
           className={({ isActive }) => 
-            `${styles.navItem} ${styles.yummyNav} ${isActive ? styles.active : ''}`
+            `${styles.navItem} ${isActive ? styles.active : ''}`
           }
         >
-          <div className={styles.yummyIcon}>
-            <Sparkles size={24} />
-          </div>
+          <Sparkles size={22} />
           <span>YummyTok</span>
         </NavLink>
         

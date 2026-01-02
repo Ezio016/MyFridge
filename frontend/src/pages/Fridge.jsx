@@ -3,9 +3,9 @@ import { Plus, Refrigerator, AlertTriangle } from 'lucide-react'
 import { inventoryAPI } from '../api/client'
 import InventoryList from '../components/InventoryList'
 import AddItemForm from '../components/AddItemForm'
-import styles from './Home.module.css'
+import styles from './Fridge.module.css'
 
-function Home() {
+function Fridge() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -125,4 +125,4 @@ function Home() {
   )
 }
 
-export default Home
+export default Fridge

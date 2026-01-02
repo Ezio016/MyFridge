@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from .database import engine, Base
-from .routes import inventory_router, chat_router
+from .routes import inventory_router, chat_router, recipes_router
 
 
 @asynccontextmanager
@@ -36,6 +36,7 @@ app.add_middleware(
 # Include routers
 app.include_router(inventory_router, prefix="/api")
 app.include_router(chat_router, prefix="/api")
+app.include_router(recipes_router, prefix="/api")
 
 
 @app.get("/")
