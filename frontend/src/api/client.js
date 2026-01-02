@@ -22,8 +22,30 @@ async function fetchAPI(endpoint, options = {}) {
     const response = await fetch(url, config);
     
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.detail || `HTTP ${response.status}`);
+      let errorMessage = `HTTP ${response.status}`;
+      try {
+        const errorData = await response.json();
+        console.error('API Error Response:', errorData);
+        
+        // Extract error message from various formats
+        if (errorData.detail) {
+          if (typeof errorData.detail === 'string') {
+            errorMessage = errorData.detail;
+          } else if (Array.isArray(errorData.detail)) {
+            // FastAPI validation errors
+            errorMessage = errorData.detail.map(e => `${e.loc?.join('.')}: ${e.msg}`).join(', ');
+          } else {
+            errorMessage = JSON.stringify(errorData.detail);
+          }
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        } else if (errorData.error) {
+          errorMessage = errorData.error;
+        }
+      } catch (e) {
+        console.error('Could not parse error response:', e);
+      }
+      throw new Error(errorMessage);
     }
     
     // Handle 204 No Content
