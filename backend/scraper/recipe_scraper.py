@@ -397,6 +397,54 @@ class RecipeScraper:
         print(f"✅ Saved {len(self.recipes)} recipes to {filename}")
 
 
+def scrape_bbc_food_recipes():
+    """Scrape multiple BBC Food recipes."""
+    bbc_urls = [
+        # Quick & Easy
+        'https://www.bbc.co.uk/food/recipes/quick_chicken_stir-fry_91200',
+        'https://www.bbc.co.uk/food/recipes/spaghetti_carbonara_89347',
+        'https://www.bbc.co.uk/food/recipes/perfect_pancakes_71620',
+        'https://www.bbc.co.uk/food/recipes/easy_spanish_omelette_86005',
+        'https://www.bbc.co.uk/food/recipes/easy_chicken_curry_89334',
+        
+        # Healthy
+        'https://www.bbc.co.uk/food/recipes/quinoa_salad_with_feta_30556',
+        'https://www.bbc.co.uk/food/recipes/salmon_teriyaki_12289',
+        'https://www.bbc.co.uk/food/recipes/greek_salad_76803',
+        
+        # Comfort Food
+        'https://www.bbc.co.uk/food/recipes/spag_bol_74322',
+        'https://www.bbc.co.uk/food/recipes/simple_fish_pie_12346',
+        'https://www.bbc.co.uk/food/recipes/macaroni_cheese_76699',
+        'https://www.bbc.co.uk/food/recipes/cottage_pie_11605',
+        
+        # Vegetarian
+        'https://www.bbc.co.uk/food/recipes/veggie_chilli_83038',
+        'https://www.bbc.co.uk/food/recipes/cheese_and_tomato_pizza_24251',
+        'https://www.bbc.co.uk/food/recipes/mushroom_risotto_77569',
+    ]
+    
+    scraper = RecipeScraper()
+    recipes = []
+    
+    print("\n🌐 Scraping BBC Food recipes...")
+    for i, url in enumerate(bbc_urls, 1):
+        print(f"  [{i}/{len(bbc_urls)}] {url}")
+        try:
+            recipe = scraper.scrape_bbc_food(url)
+            if recipe and recipe.get('name'):
+                recipes.append(recipe)
+                print(f"    ✅ {recipe['name']}")
+                time.sleep(2)  # Be polite to the server
+            else:
+                print(f"    ⚠️ Skipped (incomplete data)")
+        except Exception as e:
+            print(f"    ❌ Error: {e}")
+            continue
+    
+    return recipes
+
+
 def main():
     """Main scraper function."""
     scraper = RecipeScraper()
@@ -404,9 +452,31 @@ def main():
     print("🍳 MyFridge Recipe Scraper")
     print("=" * 50)
     
-    # For now, use simple starter recipes
-    print("\n📝 Creating starter recipe database...")
+    # Start with simple recipes
+    print("\n📝 Loading starter recipes...")
     scraper.recipes = scraper.scrape_simple_recipes()
+    print(f"✅ Added {len(scraper.recipes)} starter recipes")
+    
+    # Scrape BBC Food
+    try:
+        bbc_recipes = scrape_bbc_food_recipes()
+        scraper.recipes.extend(bbc_recipes)
+        print(f"\n✅ Added {len(bbc_recipes)} recipes from BBC Food")
+    except Exception as e:
+        print(f"\n⚠️ BBC Food scraping failed: {e}")
+        print("   Continuing with starter recipes only...")
+    
+    # Add unique IDs if missing
+    for i, recipe in enumerate(scraper.recipes):
+        if 'id' not in recipe or not recipe['id']:
+            # Create ID from name
+            recipe['id'] = recipe['name'].lower().replace(' ', '_').replace('-', '_')
+            # Ensure uniqueness
+            base_id = recipe['id']
+            counter = 1
+            while any(r.get('id') == recipe['id'] for r in scraper.recipes[:i]):
+                recipe['id'] = f"{base_id}_{counter}"
+                counter += 1
     
     # Save to JSON
     import os
@@ -419,13 +489,20 @@ def main():
     
     # Print summary
     categories = {}
+    sources = {}
     for recipe in scraper.recipes:
-        cat = recipe['category']
+        cat = recipe.get('category', 'unknown')
         categories[cat] = categories.get(cat, 0) + 1
+        src = recipe.get('source', 'unknown')
+        sources[src] = sources.get(src, 0) + 1
     
     print("\n📂 Recipes by category:")
-    for cat, count in categories.items():
+    for cat, count in sorted(categories.items()):
         print(f"  - {cat}: {count}")
+    
+    print("\n🌐 Recipes by source:")
+    for src, count in sorted(sources.items()):
+        print(f"  - {src}: {count}")
 
 
 if __name__ == '__main__':
