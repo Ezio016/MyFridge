@@ -24,3 +24,4 @@ dist/
 *.log
 npm-debug.log*
 
+groq api key
