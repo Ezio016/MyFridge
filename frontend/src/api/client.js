@@ -93,6 +93,14 @@ export const inventoryAPI = {
    * Get inventory summary
    */
   getSummary: () => fetchAPI('/inventory/summary'),
+
+  /**
+   * Parse voice input to items
+   */
+  parseVoice: (text) => fetchAPI('/inventory/parse-voice', {
+    method: 'POST',
+    body: JSON.stringify({ text }),
+  }),
 };
 
 // ============ Chat API ============

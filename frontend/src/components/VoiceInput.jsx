@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Mic, MicOff, Loader } from 'lucide-react'
+import { inventoryAPI } from '../api/client'
 import styles from './VoiceInput.module.css'
 
 function VoiceInput({ onTranscript, onItemsParsed, onError }) {
@@ -85,22 +86,9 @@ function VoiceInput({ onTranscript, onItemsParsed, onError }) {
     const startTime = Date.now()
     
     try {
-      // Add timeout for slow responses
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 15000) // 15 sec timeout
-
-      const response = await fetch('/api/inventory/parse-voice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-        signal: controller.signal
-      })
-
-      clearTimeout(timeoutId)
-
-      if (!response.ok) throw new Error('Failed to parse voice input')
-
-      const result = await response.json()
+      console.log('🎤 Sending to backend:', text)
+      const result = await inventoryAPI.parseVoice(text)
+      
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1)
       console.log(`✅ Parsed in ${elapsed}s`, result)
       
@@ -108,12 +96,8 @@ function VoiceInput({ onTranscript, onItemsParsed, onError }) {
         onItemsParsed(result.items || [], result.error)
       }
     } catch (err) {
-      if (err.name === 'AbortError') {
-        setError('⏱️ Parsing took too long. Server might be waking up. Try again!')
-      } else {
-        console.error('Parse error:', err)
-        setError(`❌ Parse failed: ${err.message}. Check if server is running.`)
-      }
+      console.error('Parse error:', err)
+      setError(`❌ ${err.message || 'Could not parse. Try again!'}`)
     } finally {
       setIsParsing(false)
     }
