@@ -2,7 +2,7 @@
  * API client for MyFridge backend
  */
 
-const API_BASE = '/api';
+const API_BASE = 'https://myfridge-di8a.onrender.com/api';
 
 /**
  * Generic fetch wrapper with error handling
