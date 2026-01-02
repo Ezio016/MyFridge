@@ -794,39 +794,6 @@
     "image_url": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800"
   },
   {
-    "id": "bootstrap_001",
-    "source": "Curated (facts), MyFridge (content)",
-    "name": "Classic Scrambled Eggs",
-    "description": "A delicious American recipe with eggs, butter, milk and more. Ready in 5 minutes!",
-    "prep_time": 5,
-    "cook_time": 5,
-    "total_time": 10,
-    "servings": 2,
-    "difficulty": "easy",
-    "ingredients": [
-      "eggs",
-      "butter",
-      "milk",
-      "salt",
-      "pepper"
-    ],
-    "instructions": [
-      "Gather all ingredients: eggs, butter, milk, salt, pepper.",
-      "Pour eggs and stir gently.",
-      "Cook until just set.",
-      "Season and serve.",
-      "Serve immediately. Serves 2."
-    ],
-    "tags": [
-      "quick",
-      "easy",
-      "protein"
-    ],
-    "cuisine": "American",
-    "category": "breakfast",
-    "image_url": ""
-  },
-  {
     "id": "bootstrap_002",
     "source": "Curated (facts), MyFridge (content)",
     "name": "Fluffy Pancakes",
@@ -864,38 +831,6 @@
     "image_url": ""
   },
   {
-    "id": "bootstrap_003",
-    "source": "Curated (facts), MyFridge (content)",
-    "name": "Avocado Toast",
-    "description": "A delicious Modern recipe with bread, avocado, lemon juice and more. Ready in 3 minutes!",
-    "prep_time": 5,
-    "cook_time": 3,
-    "total_time": 8,
-    "servings": 1,
-    "difficulty": "easy",
-    "ingredients": [
-      "bread",
-      "avocado",
-      "lemon juice",
-      "salt",
-      "pepper",
-      "red pepper flakes"
-    ],
-    "instructions": [
-      "Gather all ingredients: bread, avocado, lemon juice, salt, pepper.",
-      "Season with salt and pepper.",
-      "Serve immediately. Serves 1."
-    ],
-    "tags": [
-      "healthy",
-      "vegetarian",
-      "trendy"
-    ],
-    "cuisine": "Modern",
-    "category": "breakfast",
-    "image_url": ""
-  },
-  {
     "id": "bootstrap_004",
     "source": "Curated (facts), MyFridge (content)",
     "name": "Overnight Oats",
@@ -925,41 +860,6 @@
       "meal-prep"
     ],
     "cuisine": "International",
-    "category": "breakfast",
-    "image_url": ""
-  },
-  {
-    "id": "bootstrap_005",
-    "source": "Curated (facts), MyFridge (content)",
-    "name": "French Toast",
-    "description": "A delicious French recipe with bread, eggs, milk and more. Ready in 10 minutes!",
-    "prep_time": 5,
-    "cook_time": 10,
-    "total_time": 15,
-    "servings": 2,
-    "difficulty": "easy",
-    "ingredients": [
-      "bread",
-      "eggs",
-      "milk",
-      "cinnamon",
-      "vanilla extract",
-      "butter",
-      "maple syrup"
-    ],
-    "instructions": [
-      "Gather all ingredients: bread, eggs, milk, cinnamon, vanilla extract.",
-      "Dip bread slices in egg mixture.",
-      "Cook bread until golden on both sides.",
-      "Serve with maple syrup.",
-      "Serve immediately. Serves 2."
-    ],
-    "tags": [
-      "comfort-food",
-      "weekend",
-      "sweet"
-    ],
-    "cuisine": "French",
     "category": "breakfast",
     "image_url": ""
   },

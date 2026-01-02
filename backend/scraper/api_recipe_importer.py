@@ -76,11 +76,29 @@ class APIRecipeImporter:
             self.existing_recipes = []
     
     def _normalize_name(self, name: str) -> str:
-        """Normalize recipe name for duplicate detection."""
+        """Normalize recipe name for fuzzy duplicate detection."""
         if not name or len(name) < 3:
             return ""
-        normalized = re.sub(r'[^\w\s]', '', name.lower())
+        
+        # Lowercase
+        normalized = name.lower().strip()
+        
+        # Remove common descriptor words that don't change the recipe
+        ignore_words = [
+            'the', 'a', 'an', 'perfect', 'classic', 'easy', 'simple',
+            'best', 'homemade', 'ultimate', 'authentic', 'traditional',
+            'quick', 'delicious', 'amazing', 'favorite'
+        ]
+        words = normalized.split()
+        words = [w for w in words if w not in ignore_words]
+        normalized = ' '.join(words)
+        
+        # Remove special characters
+        normalized = re.sub(r'[^\w\s]', '', normalized)
+        
+        # Remove extra spaces
         normalized = re.sub(r'\s+', ' ', normalized).strip()
+        
         return normalized if len(normalized) >= 3 else ""
     
     def is_duplicate(self, recipe_name: str, recipe_id: str) -> bool:
