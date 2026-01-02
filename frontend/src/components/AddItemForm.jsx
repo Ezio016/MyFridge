@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X, Plus, Save, Refrigerator, Snowflake, Package } from 'lucide-react'
+import VoiceInput from './VoiceInput'
 import styles from './AddItemForm.module.css'
 
 const LOCATIONS = [
@@ -65,6 +66,7 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
     notes: '',
   })
   const [loading, setLoading] = useState(false)
+  const [useVoice, setUseVoice] = useState(false)
 
   // Populate form if editing
   useEffect(() => {
@@ -108,6 +110,28 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
     }
   }
 
+  const handleVoiceItems = async (items) => {
+    if (!items || items.length === 0) {
+      alert('No items detected. Please try again!')
+      return
+    }
+
+    setLoading(true)
+    try {
+      // Add each item parsed from voice
+      for (const item of items) {
+        await onSubmit(item)
+      }
+      alert(`✅ Added ${items.length} item(s) to your fridge!`)
+      onClose()
+    } catch (err) {
+      console.error('Failed to add items:', err)
+      alert('Failed to add some items. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
@@ -118,7 +142,34 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        {!isEditing && (
+          <div className={styles.inputMethod}>
+            <button
+              type="button"
+              className={`${styles.methodBtn} ${!useVoice ? styles.active : ''}`}
+              onClick={() => setUseVoice(false)}
+            >
+              ⌨️ Type
+            </button>
+            <button
+              type="button"
+              className={`${styles.methodBtn} ${useVoice ? styles.active : ''}`}
+              onClick={() => setUseVoice(true)}
+            >
+              🎤 Voice
+            </button>
+          </div>
+        )}
+
+        {useVoice && !isEditing ? (
+          <div className={styles.voiceSection}>
+            <VoiceInput onItemsParsed={handleVoiceItems} />
+            <p className={styles.voiceHint}>
+              💡 Try saying: "I have 2 apples and a carton of milk expiring in 5 days"
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
             <label htmlFor="name">Item Name *</label>
             <input
@@ -225,6 +276,7 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
             </button>
           </div>
         </form>
+        )}
       </div>
     </div>
   )

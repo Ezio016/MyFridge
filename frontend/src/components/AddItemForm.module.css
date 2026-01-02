@@ -138,3 +138,48 @@
   flex: 1;
   padding: 1rem;
 }
+
+/* Voice Input UI */
+.inputMethod {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1.5rem;
+  padding-top: 1rem;
+}
+
+.methodBtn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--wood-dark);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.methodBtn:hover {
+  border-color: var(--accent);
+}
+
+.methodBtn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.voiceSection {
+  padding: 1.5rem;
+}
+
+.voiceHint {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  border-left: 3px solid var(--accent);
+  line-height: 1.5;
+}

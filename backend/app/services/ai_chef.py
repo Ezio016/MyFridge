@@ -215,3 +215,84 @@ Please give me the FULL detailed recipe with:
 Make it fun and encouraging! I can do this! 💪"""
     
     return await chat_with_chef(prompt, inventory_summary)
+
+
+async def parse_voice_to_items(text: str) -> dict:
+    """Parse voice input text into structured fridge items using AI."""
+    try:
+        groq_client = get_groq_client()
+    except ValueError:
+        return {
+            "items": [],
+            "error": "AI not configured. Please add items manually."
+        }
+    
+    prompt = f"""Parse this voice input into structured fridge items. Extract ALL items mentioned.
+
+Voice input: "{text}"
+
+For each item, extract:
+- name (the item name)
+- quantity (number, default to 1 if not mentioned)
+- unit (pieces/g/kg/ml/L/cups/etc, default to "pieces")
+- location (fridge/freezer/pantry, default to "fridge")
+- category (dairy/meat/seafood/vegetable/fruit/grain/beverage/condiment/snack/leftover/other)
+- expiration_date (YYYY-MM-DD format if mentioned, otherwise null)
+- notes (any additional info)
+
+Respond ONLY with valid JSON in this exact format:
+{{
+  "items": [
+    {{
+      "name": "Milk",
+      "quantity": 2,
+      "unit": "L",
+      "location": "fridge",
+      "category": "dairy",
+      "expiration_date": "2025-01-15",
+      "notes": "Whole milk"
+    }}
+  ]
+}}
+
+Examples:
+- "I have 2 apples and 3 bananas" → 2 items (apples, bananas)
+- "Add milk expiring in 5 days" → 1 item with expiry date 5 days from today
+- "I got chicken from the freezer" → 1 item, location=freezer
+- "Half a loaf of bread in pantry" → 1 item, quantity=0.5, unit=loaves
+
+Return ONLY the JSON, no other text."""
+
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,  # Lower temperature for more consistent parsing
+            max_tokens=1000,
+        )
+        
+        result_text = response.choices[0].message.content.strip()
+        
+        # Try to extract JSON if there's extra text
+        import json
+        import re
+        
+        # Find JSON in the response
+        json_match = re.search(r'\{.*\}', result_text, re.DOTALL)
+        if json_match:
+            result_text = json_match.group(0)
+        
+        result = json.loads(result_text)
+        
+        # Validate structure
+        if "items" not in result:
+            result = {"items": []}
+        
+        return result
+        
+    except Exception as e:
+        print(f"Voice parsing error: {e}")
+        return {
+            "items": [],
+            "error": f"Could not parse input: {str(e)}"
+        }

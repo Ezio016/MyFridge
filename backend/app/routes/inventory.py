@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import Optional
+from pydantic import BaseModel
 
 from ..database import get_db
 from ..schemas import (
@@ -10,8 +11,14 @@ from ..schemas import (
     FridgeItemResponse
 )
 from ..services import inventory_service
+from ..services.ai_chef import parse_voice_to_items
 
 router = APIRouter(prefix="/inventory", tags=["inventory"])
+
+
+class VoiceInputRequest(BaseModel):
+    """Request body for voice input parsing."""
+    text: str
 
 
 @router.get("/", response_model=list[FridgeItemResponse])
@@ -94,6 +101,16 @@ def delete_item(item_id: int, db: Session = Depends(get_db)):
     if not success:
         raise HTTPException(status_code=404, detail="Item not found")
     return None
+
+
+@router.post("/parse-voice")
+async def parse_voice_input(request: VoiceInputRequest):
+    """Parse voice input into structured fridge items using AI."""
+    try:
+        result = await parse_voice_to_items(request.text)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to parse voice input: {str(e)}")
 
 
 def _item_to_response(item) -> FridgeItemResponse:
