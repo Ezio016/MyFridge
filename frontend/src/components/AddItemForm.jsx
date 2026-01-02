@@ -110,16 +110,11 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
     }
   }
 
-  const handleVoiceItems = async (items, error) => {
-    console.log('Voice parsing result:', { items, error })
-    
-    if (error) {
-      alert(`❌ Error: ${error}`)
-      return
-    }
+  const handleVoiceItems = async (items) => {
+    console.log('Submitting items:', items)
     
     if (!items || items.length === 0) {
-      alert('❌ No food items detected in your speech. Try being more specific:\n\nExample: "I have 2 apples, milk, and 3 chicken breasts"')
+      alert('❌ No items to add!')
       return
     }
 

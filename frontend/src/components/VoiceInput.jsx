@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
-import { Mic, MicOff, Loader } from 'lucide-react'
+import { Mic, MicOff, Loader, X } from 'lucide-react'
 import { inventoryAPI } from '../api/client'
 import styles from './VoiceInput.module.css'
 
-function VoiceInput({ onTranscript, onItemsParsed, onError }) {
+function VoiceInput({ onItemsParsed }) {
   const [isListening, setIsListening] = useState(false)
   const [transcript, setTranscript] = useState('')
   const [error, setError] = useState(null)
   const [isParsing, setIsParsing] = useState(false)
+  const [itemsList, setItemsList] = useState([])
   const recognitionRef = useRef(null)
 
   useEffect(() => {
@@ -21,7 +22,7 @@ function VoiceInput({ onTranscript, onItemsParsed, onError }) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     const recognition = new SpeechRecognition()
     
-    recognition.continuous = true  // Keep listening
+    recognition.continuous = true
     recognition.interimResults = true
     recognition.lang = 'en-US'
     recognition.maxAlternatives = 1
@@ -49,7 +50,6 @@ function VoiceInput({ onTranscript, onItemsParsed, onError }) {
 
       const currentTranscript = finalTranscriptText + interimTranscript
       setTranscript(currentTranscript)
-      if (onTranscript) onTranscript(currentTranscript)
     }
 
     recognition.onerror = (event) => {
@@ -92,8 +92,14 @@ function VoiceInput({ onTranscript, onItemsParsed, onError }) {
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1)
       console.log(`✅ Parsed in ${elapsed}s`, result)
       
-      if (onItemsParsed) {
-        onItemsParsed(result.items || [], result.error)
+      if (result.items && result.items.length > 0) {
+        // Add to the list instead of submitting immediately
+        setItemsList(prev => [...prev, ...result.items])
+        setTranscript('') // Clear transcript after successful parse
+      } else if (result.error) {
+        setError(result.error)
+      } else {
+        setError('No items detected. Try again!')
       }
     } catch (err) {
       console.error('Parse error:', err)
@@ -110,6 +116,21 @@ function VoiceInput({ onTranscript, onItemsParsed, onError }) {
       recognitionRef.current.stop()
     } else {
       recognitionRef.current.start()
+    }
+  }
+
+  const removeItem = (index) => {
+    setItemsList(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const clearAll = () => {
+    setItemsList([])
+  }
+
+  const submitAllItems = () => {
+    if (onItemsParsed && itemsList.length > 0) {
+      onItemsParsed(itemsList)
+      setItemsList([]) // Clear after submit
     }
   }
 
@@ -140,19 +161,48 @@ function VoiceInput({ onTranscript, onItemsParsed, onError }) {
       <div className={styles.status}>
         {isParsing ? (
           <>
-            <span className={styles.parsing}>🧠 AI is parsing your items...</span>
-            <span className={styles.subtext}>(First time may take 10-15s as server wakes up)</span>
+            <span className={styles.parsing}>🧠 AI is parsing...</span>
+            <span className={styles.subtext}>(First time may take 10-15s)</span>
           </>
         ) : isListening ? (
-          <span className={styles.active}>🎤 Listening... Speak clearly, then click mic again when done!</span>
+          <span className={styles.active}>🎤 Say one item, then click mic</span>
         ) : (
-          <span className={styles.idle}>Click mic and speak what items you have</span>
+          <span className={styles.idle}>Click mic → Say item → Click again → Repeat</span>
         )}
       </div>
 
       {transcript && (
         <div className={styles.transcript}>
-          <strong>You said:</strong> "{transcript}"
+          <strong>Listening:</strong> "{transcript}"
+        </div>
+      )}
+
+      {/* Items List */}
+      {itemsList.length > 0 && (
+        <div className={styles.itemsList}>
+          <div className={styles.itemsHeader}>
+            <strong>Items to add ({itemsList.length}):</strong>
+            <button className={styles.clearBtn} onClick={clearAll}>Clear All</button>
+          </div>
+          <div className={styles.items}>
+            {itemsList.map((item, index) => (
+              <div key={index} className={styles.item}>
+                <span className={styles.itemText}>
+                  {item.quantity} {item.unit} of {item.name}
+                </span>
+                <button 
+                  className={styles.removeBtn} 
+                  onClick={() => removeItem(index)}
+                  title="Remove"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button className={styles.submitBtn} onClick={submitAllItems}>
+            ✅ Add All {itemsList.length} Items to Fridge
+          </button>
         </div>
       )}
     </div>
@@ -160,4 +210,3 @@ function VoiceInput({ onTranscript, onItemsParsed, onError }) {
 }
 
 export default VoiceInput
-
