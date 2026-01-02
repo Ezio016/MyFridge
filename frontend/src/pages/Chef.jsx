@@ -78,6 +78,29 @@ function Chef() {
           )
         })
         
+        // Separate main vs optional ingredients
+        const isOptional = r.ingredients.map(ing => {
+          const ingLower = ing.toLowerCase()
+          // These are optional/common ingredients people usually have
+          return pantryStaples.some(staple => ingLower.includes(staple)) ||
+                 ingLower.includes('salt') || ingLower.includes('pepper') ||
+                 ingLower.includes('water') || ingLower.includes('oil')
+        })
+        
+        const mainIngredients = r.ingredients.filter((_, i) => !isOptional[i])
+        const optionalIngredients = r.ingredients.filter((_, i) => isOptional[i])
+        
+        const hasMain = mainIngredients.map(ing => {
+          const ingLower = ing.toLowerCase()
+          return inventoryNames.some(inv => 
+            ingLower.includes(inv) || inv.includes(ingLower.split(' ')[0])
+          )
+        })
+        
+        const hasOptional = optionalIngredients.map(() => true) // Assume they have optional items
+        
+        const missingMainCount = hasMain.filter(h => !h).length
+        const totalMainCount = mainIngredients.length
         const missingCount = hasIngredient.filter(h => !h).length
         
         return {
@@ -87,8 +110,16 @@ function Chef() {
           level: r.difficulty || 'easy',
           usesExpiring: false, // Could enhance this later
           ingredients: r.ingredients,
+          mainIngredients,
+          optionalIngredients,
           hasIngredient,
+          hasMain,
+          hasOptional,
+          isOptional,
           missingCount,
+          missingMainCount,
+          totalMainCount,
+          hasAll: missingMainCount === 0, // Only care about main ingredients
           steps: r.instructions,
           description: r.description,
           tags: r.tags || [],
@@ -345,7 +376,16 @@ RULES:
                       {recipe.hasAll ? (
                         <span className={styles.ready}>✓ Ready to cook</span>
                       ) : (
-                        <span className={styles.needItems}>Need {recipe.missingCount} items</span>
+                        <div className={styles.ingredientStatus}>
+                          <span className={styles.needItems}>
+                            Main: {recipe.totalMainCount - recipe.missingMainCount}/{recipe.totalMainCount}
+                          </span>
+                          {recipe.optionalIngredients.length > 0 && (
+                            <span className={styles.optionalItems}>
+                              + {recipe.optionalIngredients.length} optional
+                            </span>
+                          )}
+                        </div>
                       )}
                       {recipe.usesExpiring && (
                         <span className={styles.expiringTag}>🔥 Uses expiring</span>
@@ -373,26 +413,43 @@ RULES:
 
             {!selectedRecipe.hasAll && (
               <div className={styles.missingAlert}>
-                <h4>Missing ingredients:</h4>
+                <h4>Missing main ingredients:</h4>
                 <ul>
-                  {selectedRecipe.ingredients
-                    .filter((_, i) => !selectedRecipe.hasIngredient[i])
+                  {selectedRecipe.mainIngredients
+                    .filter((_, i) => !selectedRecipe.hasMain[i])
                     .map((ing, i) => <li key={i}>{ing}</li>)
                   }
                 </ul>
+                <p className={styles.missingNote}>
+                  Optional/pantry items are usually available and not listed here
+                </p>
               </div>
             )}
 
             <div className={styles.ingredientsList}>
-              <h4>Ingredients</h4>
-              {selectedRecipe.ingredients.map((ing, i) => (
+              <h4>Main Ingredients</h4>
+              {selectedRecipe.mainIngredients.map((ing, i) => (
                 <div 
                   key={i} 
-                  className={`${styles.ingredientItem} ${selectedRecipe.hasIngredient[i] ? styles.have : styles.need}`}
+                  className={`${styles.ingredientItem} ${selectedRecipe.hasMain[i] ? styles.have : styles.need}`}
                 >
-                  {selectedRecipe.hasIngredient[i] ? '✓' : '✗'} {ing}
+                  {selectedRecipe.hasMain[i] ? '✓' : '✗'} {ing}
                 </div>
               ))}
+              
+              {selectedRecipe.optionalIngredients.length > 0 && (
+                <>
+                  <h4 className={styles.optionalHeader}>Optional/Pantry Items</h4>
+                  {selectedRecipe.optionalIngredients.map((ing, i) => (
+                    <div 
+                      key={i} 
+                      className={`${styles.ingredientItem} ${styles.optional}`}
+                    >
+                      ✓ {ing}
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
 
             <div className={styles.stepsSection}>

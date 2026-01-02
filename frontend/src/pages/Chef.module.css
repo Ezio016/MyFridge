@@ -284,10 +284,29 @@
   font-weight: 600;
 }
 
+.ingredientStatus {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
 .needItems {
   font-size: 0.75rem;
-  color: var(--danger);
   font-weight: 600;
+}
+
+.recipeCard.hasAll .needItems {
+  color: var(--fresh);
+}
+
+.recipeCard.missing .needItems {
+  color: var(--danger);
+}
+
+.optionalItems {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 .expiringTag {
@@ -347,6 +366,13 @@
   border-radius: 4px;
 }
 
+.missingNote {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 .ingredientsList {
   background: var(--bg-card);
   border: 2px solid var(--wood-dark);
@@ -363,6 +389,13 @@
   letter-spacing: 0.05em;
 }
 
+.optionalHeader {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--wood-dark);
+  opacity: 0.7;
+}
+
 .ingredientItem {
   padding: 0.4rem 0;
   font-size: 0.9rem;
@@ -377,6 +410,12 @@
 
 .ingredientItem.need {
   color: var(--danger);
+}
+
+.ingredientItem.optional {
+  color: var(--text-muted);
+  opacity: 0.7;
+  font-size: 0.85rem;
 }
 
 .stepsSection h4 {
