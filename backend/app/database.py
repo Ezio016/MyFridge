@@ -6,6 +6,11 @@ import os
 # Get database URL from environment
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./myfridge.db")
 
+# Fix Render's postgres:// to postgresql:// (SQLAlchemy 1.4+ requirement)
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    print(f"⚠️ Converted postgres:// to postgresql:// for SQLAlchemy compatibility")
+
 # Handle SQLite-specific settings
 if DATABASE_URL.startswith("sqlite"):
     engine = create_engine(
