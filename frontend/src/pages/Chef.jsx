@@ -159,10 +159,32 @@ function Chef() {
         
         // Smart ingredient matching helper
         const matchIngredient = (recipeIng, inventoryIng) => {
+          // Ingredients that should NEVER match each other
+          const nonSubstitutable = {
+            'tortilla': ['bread', 'naan', 'pita', 'baguette', 'roll', 'bun'],
+            'bread': ['tortilla', 'rice', 'pasta', 'noodle'],
+            'rice': ['pasta', 'noodle', 'bread', 'quinoa', 'couscous'],
+            'pasta': ['rice', 'noodle', 'bread'],
+            'noodle': ['rice', 'pasta', 'bread'],
+            'chicken': ['beef', 'pork', 'lamb', 'turkey', 'duck'],
+            'beef': ['chicken', 'pork', 'lamb', 'turkey'],
+            'pork': ['chicken', 'beef', 'lamb', 'turkey'],
+            'shrimp': ['chicken', 'beef', 'pork', 'fish', 'crab'],
+            'fish': ['chicken', 'beef', 'pork', 'shrimp'],
+            'tofu': ['chicken', 'beef', 'pork', 'tempeh'],
+            'butter': ['oil', 'margarine', 'lard'],
+            'oil': ['butter'],
+            'milk': ['cream', 'yogurt', 'buttermilk'],
+            'cream': ['milk', 'yogurt'],
+            'cheese': ['yogurt', 'cream cheese'],
+            'potato': ['sweet potato', 'yam'],
+            'sweet potato': ['potato', 'yam']
+          }
+          
           // Remove filler words that don't change the ingredient
           const fillers = ['fresh', 'frozen', 'mixed', 'chopped', 'diced', 'sliced', 
                           'minced', 'dried', 'canned', 'cooked', 'raw', 'whole',
-                          'ground', 'shredded', 'grated', 'crushed', 'peeled']
+                          'ground', 'shredded', 'grated', 'crushed', 'peeled', 'large', 'small']
           
           const cleanIngredient = (ing) => {
             let cleaned = ing.toLowerCase().trim()
@@ -175,18 +197,44 @@ function Chef() {
           const recipeClean = cleanIngredient(recipeIng)
           const invClean = cleanIngredient(inventoryIng)
           
+          // Check if these ingredients are explicitly non-substitutable
+          for (const [key, incompatible] of Object.entries(nonSubstitutable)) {
+            if (recipeClean.includes(key)) {
+              for (const incompat of incompatible) {
+                if (invClean.includes(incompat)) {
+                  return false // Definitely not a match
+                }
+              }
+            }
+            if (invClean.includes(key)) {
+              for (const incompat of incompatible) {
+                if (recipeClean.includes(incompat)) {
+                  return false // Definitely not a match
+                }
+              }
+            }
+          }
+          
           // Exact match after cleaning
           if (recipeClean === invClean) return true
           
-          // Either contains the other
+          // One fully contains the other (e.g., "vegetables" contains "vegetable")
           if (recipeClean.includes(invClean) || invClean.includes(recipeClean)) return true
           
-          // Check if main words match
+          // Check if MOST significant words match (not just ANY word)
           const recipeWords = recipeClean.split(' ').filter(w => w.length > 2)
           const invWords = invClean.split(' ').filter(w => w.length > 2)
           
-          // If any significant word matches, it's a match
-          return recipeWords.some(rw => invWords.includes(rw))
+          // If either is a single word, require exact match
+          if (recipeWords.length === 1 || invWords.length === 1) {
+            return recipeWords.some(rw => invWords.includes(rw))
+          }
+          
+          // For multi-word ingredients, require at least 50% word overlap
+          const matchingWords = recipeWords.filter(rw => invWords.includes(rw))
+          const overlapRatio = matchingWords.length / Math.min(recipeWords.length, invWords.length)
+          
+          return overlapRatio >= 0.5
         }
         
         const hasIngredient = r.ingredients.map(ing => {

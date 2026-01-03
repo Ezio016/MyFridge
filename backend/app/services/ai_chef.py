@@ -365,17 +365,46 @@ async def parse_voice_to_items(text: str) -> dict:
             "error": "AI not configured. Please add items manually."
         }
     
-    # Ultra-simple, strict JSON-only prompt
-    prompt = f"""Extract food items from this text. Return ONLY valid JSON array. No explanation, no markdown, ONLY JSON.
+    # Smart voice parsing prompt with context-aware defaults
+    prompt = f"""Extract food items from this text and return ONLY valid JSON. Be SMART about units, quantities, and categories.
 
-Text: {text}
+Text: "{text}"
 
-JSON format (copy exactly):
-{{"items":[{{"name":"item","quantity":1,"unit":"pieces","location":"fridge","category":"other","expiration_date":null,"notes":null}}]}}
+SMART UNIT SELECTION (DO NOT use "pieces" for everything!):
+- Liquids (oil, vinegar, milk, juice, soy sauce): "bottles" or "ml" (default: 1 bottle)
+- Powders/spices (salt, pepper, coriander, cumin, flour, sugar): "grams" or "teaspoons" (default: 100 grams)
+- Vegetables (tomato, onion, carrot, potato): "pieces" (OK to use here)
+- Leafy greens (lettuce, cabbage, kale): "heads" or "bunches"
+- Meat/fish/protein (chicken, beef, pork, fish, tofu): "grams" or "pounds" (default: 500 grams)
+- Dairy (cheese, butter): "blocks" or "grams" (default: 200 grams)
+- Eggs: "pieces" or "dozen"
+- Grains/pasta (rice, pasta, noodles): "bags" or "grams" (default: 500 grams)
+- Bread: "loaves" or "pieces"
 
-Categories: dairy, meat, seafood, vegetable, fruit, grain, beverage, condiment, snack, other
+SMART CATEGORY SELECTION:
+- dairy: milk, cheese, yogurt, butter, cream, eggs
+- meat: chicken, beef, pork, lamb, bacon, ham, sausage
+- seafood: fish, shrimp, salmon, tuna, crab, squid
+- vegetable: tomato, onion, carrot, potato, lettuce, broccoli, pepper, garlic
+- fruit: apple, banana, orange, lemon, lime, berries, mango
+- grain: rice, pasta, bread, noodles, flour, oats
+- beverage: juice, soda, coffee, tea, wine, beer
+- condiment: oil, vinegar, soy sauce, ketchup, mustard, mayo, sauce, paste
+- snack: chips, cookies, crackers, nuts
 
-IMPORTANT: Return ONLY the JSON object. Nothing else."""
+SMART LOCATION:
+- Fresh produce, dairy, cooked food → "fridge"
+- Meat, ice cream, long-term items → "freezer"  
+- Dry goods, canned items, spices, oil → "pantry"
+
+JSON format (copy exactly, adjust values smartly):
+{{"items":[{{"name":"tomatoes","quantity":3,"unit":"pieces","location":"fridge","category":"vegetable","expiration_date":null,"notes":null}}]}}
+
+IMPORTANT: 
+1. Return ONLY the JSON object. No explanation, no markdown.
+2. Use APPROPRIATE units (not "pieces" for oil/salt/powder!)
+3. Categorize correctly (not everything is "other")
+4. If quantity not mentioned, use sensible defaults based on item type"""
 
     try:
         print("🤖 Sending to Groq AI...")
