@@ -21,6 +21,10 @@ import os
 from pathlib import Path
 from datetime import datetime, timedelta
 import time
+import warnings
+
+# Suppress pandas FutureWarnings
+warnings.filterwarnings('ignore', category=FutureWarning)
 
 # TODO: Install these packages
 # pip install pytrends requests-cache
@@ -252,10 +256,11 @@ class RealPopularityScorer:
         # Score each recipe
         for i, recipe in enumerate(recipes):
             recipe_name = recipe.get('name', 'Unknown')
-            print(f"[{i+1}/{len(recipes)}] Scoring: {recipe_name}")
+            print(f"[{i+1}/{len(recipes)}] Scoring: {recipe_name}", flush=True)
             
             # Calculate real popularity
             real_score = self.calculate_real_popularity(recipe)
+            print(f"    → Score: {real_score:.1f}", flush=True)
             
             # Store both scores for comparison
             recipe['popularity_score_old'] = recipe.get('popularity_score', 0)
