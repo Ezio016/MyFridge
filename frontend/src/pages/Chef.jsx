@@ -153,6 +153,46 @@ function Chef() {
                      ingLower === 'plain flour' ||
                      (ingLower.includes('flour') && !ingLower.includes(' flour'))
             }
+            
+            // For pepper (spice), must NOT be vegetable peppers
+            if (staple === 'pepper') {
+              // Only match the spice, not vegetable peppers
+              return (ingLower === 'pepper' || 
+                      ingLower === 'black pepper' || 
+                      ingLower === 'white pepper' ||
+                      ingLower === 'ground pepper' ||
+                      ingLower.includes('peppercorn')) &&
+                     // Exclude all vegetable peppers
+                     !ingLower.includes('bell pepper') &&
+                     !ingLower.includes('padron') &&
+                     !ingLower.includes('jalapeno') &&
+                     !ingLower.includes('chili pepper') &&
+                     !ingLower.includes('red pepper') &&
+                     !ingLower.includes('green pepper') &&
+                     !ingLower.includes('yellow pepper') &&
+                     !ingLower.includes('sweet pepper') &&
+                     !ingLower.includes('hot pepper') &&
+                     !ingLower.includes('shishito') &&
+                     !ingLower.includes('poblano') &&
+                     !ingLower.includes('serrano') &&
+                     !ingLower.includes('habanero') &&
+                     !ingLower.includes('cayenne pepper') && // cayenne is a spice but often called "pepper"
+                     !ingLower.includes('peppers') // plural usually means vegetables
+            }
+            
+            // For garlic/onion, must be the vegetable not powder
+            if (staple === 'garlic') {
+              return (ingLower === 'garlic' || 
+                      ingLower.includes('garlic clove') ||
+                      ingLower.includes('fresh garlic')) &&
+                     !ingLower.includes('garlic powder')
+            }
+            
+            if (staple === 'onion') {
+              return (ingLower.includes('onion')) &&
+                     !ingLower.includes('onion powder')
+            }
+            
             return ingLower === staple || ingLower.includes(staple)
           })
         }
@@ -285,25 +325,48 @@ function Chef() {
           steps: r.instructions,
           description: r.description,
           tags: r.tags || [],
-          image_url: r.image_url
+          image_url: r.image_url,
+          popularity_score: r.popularity_score || 0 // Add popularity score
         }
       })
       
       // Filter and sort based on mode
       if (type === 'lightning') {
         // Lightning: Only show recipes with at least 1 main ingredient match
-        const filtered = formattedRecipes.filter(r => r.hasAtLeastOneMain)
+        let filtered = formattedRecipes.filter(r => r.hasAtLeastOneMain)
+        
+        // Sort by readiness + popularity
+        filtered = filtered.sort((a, b) => {
+          // 1. Green recipes (hasAll) come first
+          if (a.hasAll && !b.hasAll) return -1
+          if (!a.hasAll && b.hasAll) return 1
+          
+          // 2. Within same readiness, sort by missing count
+          if (a.missingMainCount !== b.missingMainCount) {
+            return a.missingMainCount - b.missingMainCount
+          }
+          
+          // 3. If same readiness, sort by popularity
+          return (b.popularity_score || 0) - (a.popularity_score || 0)
+        })
+        
         console.log(`⚡ Lightning filtered: ${filtered.length} recipes with your ingredients`)
         setAllRecipes(filtered)
         setRecipes(filtered) // Show all filtered recipes
       } else {
-        // Explore: Show ALL recipes, sorted by hasAll (green first)
+        // Explore: Show ALL recipes, sorted by readiness + popularity
         const sorted = [...formattedRecipes].sort((a, b) => {
-          // Green recipes (hasAll) come first
+          // 1. Green recipes (hasAll) come first
           if (a.hasAll && !b.hasAll) return -1
           if (!a.hasAll && b.hasAll) return 1
-          // Then sort by missing count (fewer missing = higher priority)
-          return a.missingMainCount - b.missingMainCount
+          
+          // 2. Within same readiness level, sort by missing count
+          if (a.missingMainCount !== b.missingMainCount) {
+            return a.missingMainCount - b.missingMainCount
+          }
+          
+          // 3. If same readiness, sort by popularity score (higher = better)
+          return (b.popularity_score || 0) - (a.popularity_score || 0)
         })
         console.log(`🧭 Explore: ${sorted.length} recipes (${sorted.filter(r => r.hasAll).length} ready to cook)`)
         setAllRecipes(sorted)
@@ -615,7 +678,7 @@ RULES:
                     <p>🧭 Showing {startIndex + 1}-{Math.min(endIndex, totalRecipes)} of {totalRecipes} recipes</p>
                   )}
                 </div>
-                <div className={styles.recipesGrid}>
+              <div className={styles.recipesGrid}>
                   {paginatedRecipes.map((recipe) => (
                   <div 
                     key={recipe.id}
