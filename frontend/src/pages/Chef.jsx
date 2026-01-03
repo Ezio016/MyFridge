@@ -68,28 +68,56 @@ function Chef() {
       const formattedRecipes = response.recipes.map((r, idx) => {
         // Check which ingredients user has
         const inventoryNames = inventory.map(i => i.name.toLowerCase())
-        const pantryStaples = ['salt', 'pepper', 'oil', 'olive oil', 'vegetable oil',  'butter', 'water', 'sugar', 'flour']
+        
+        // Only truly universal pantry staples (NOT specialty items!)
+        const isPantryStaple = (ing) => {
+          const ingLower = ing.toLowerCase().trim()
+          
+          // Specialty ingredients are NEVER pantry staples
+          const specialtyKeywords = [
+            'chickpea', 'almond', 'coconut', 'rice flour', 'cornmeal',
+            'quinoa', 'specialty', 'fresh', 'greek', 'parmesan', 'cheddar',
+            'mozzarella', 'feta', 'cream cheese', 'sour cream', 'heavy cream'
+          ]
+          if (specialtyKeywords.some(keyword => ingLower.includes(keyword))) {
+            return false
+          }
+          
+          // Only basic pantry staples
+          const basicPantry = [
+            'salt', 'pepper', 'water', 
+            'olive oil', 'vegetable oil', 'cooking oil', 'oil',
+            'butter', 'sugar', 'all-purpose flour', 'flour',
+            'garlic', 'onion'
+          ]
+          
+          // Exact or close match to basic pantry items
+          return basicPantry.some(staple => {
+            // For flour, must be "flour" alone or "all-purpose flour" 
+            if (staple === 'flour' || staple === 'all-purpose flour') {
+              return ingLower === 'flour' || 
+                     ingLower === 'all-purpose flour' || 
+                     ingLower === 'plain flour' ||
+                     (ingLower.includes('flour') && !ingLower.includes(' flour'))
+            }
+            return ingLower === staple || ingLower.includes(staple)
+          })
+        }
         
         const hasIngredient = r.ingredients.map(ing => {
-          const ingLower = ing.toLowerCase()
           // Assume they have pantry staples
-          if (pantryStaples.some(staple => ingLower.includes(staple))) {
+          if (isPantryStaple(ing)) {
             return true
           }
           // Check if in fridge
+          const ingLower = ing.toLowerCase()
           return inventoryNames.some(inv => 
             ingLower.includes(inv) || inv.includes(ingLower.split(' ')[0])
           )
         })
         
         // Separate main vs optional ingredients
-        const isOptional = r.ingredients.map(ing => {
-          const ingLower = ing.toLowerCase()
-          // These are optional/common ingredients people usually have
-          return pantryStaples.some(staple => ingLower.includes(staple)) ||
-                 ingLower.includes('salt') || ingLower.includes('pepper') ||
-                 ingLower.includes('water') || ingLower.includes('oil')
-        })
+        const isOptional = r.ingredients.map(ing => isPantryStaple(ing))
         
         const mainIngredients = r.ingredients.filter((_, i) => !isOptional[i])
         const optionalIngredients = r.ingredients.filter((_, i) => isOptional[i])
@@ -241,15 +269,34 @@ RULES:
       // Check which ingredients we have (stricter matching)
       const inventoryNames = inventory.map(i => i.name.toLowerCase().trim())
       
-      // Common pantry staples that everyone has - don't count as missing
-      const pantryStaples = ['salt', 'pepper', 'oil', 'olive oil', 'vegetable oil', 'cooking oil', 
-        'water', 'butter', 'sugar', 'flour', 'garlic', 'onion', 'soy sauce', 'vinegar']
+      // Smart pantry check (same as above)
+      const isPantryStaple = (ing) => {
+        const ingLower = ing.toLowerCase().trim()
+        const specialtyKeywords = [
+          'chickpea', 'almond', 'coconut', 'rice flour', 'cornmeal',
+          'quinoa', 'specialty', 'fresh', 'greek', 'parmesan', 'cheddar',
+          'mozzarella', 'feta', 'cream cheese', 'sour cream', 'heavy cream'
+        ]
+        if (specialtyKeywords.some(keyword => ingLower.includes(keyword))) {
+          return false
+        }
+        const basicPantry = [
+          'salt', 'pepper', 'water', 
+          'olive oil', 'vegetable oil', 'cooking oil', 'oil',
+          'butter', 'sugar', 'all-purpose flour', 'flour',
+          'garlic', 'onion', 'soy sauce', 'vinegar'
+        ]
+        return basicPantry.some(staple => {
+          if (staple === 'flour' || staple === 'all-purpose flour') {
+            return ingLower === 'flour' || ingLower === 'all-purpose flour' || ingLower === 'plain flour'
+          }
+          return ingLower === staple || ingLower.includes(staple)
+        })
+      }
       
       const hasIngredient = ingredients.map(ing => {
-        const ingLower = ing.toLowerCase().trim()
-        
         // Skip pantry staples - assume they have them
-        if (pantryStaples.some(staple => ingLower.includes(staple) || staple.includes(ingLower))) {
+        if (isPantryStaple(ing)) {
           return true
         }
         
