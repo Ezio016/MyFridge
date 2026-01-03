@@ -51,8 +51,8 @@ function Chef() {
       
       let response
       if (type === 'lightning') {
-        // Get ALL quick recipes (under 15 min) for lightning mode
-        response = await recipeAPI.getQuick(15, 100) // Get up to 100 quick recipes
+        // Get quick recipes (under 15 min) - backend limit is 50
+        response = await recipeAPI.getQuick(15, 50)
       } else {
         // Get ALL recipes for exploration
         response = await recipeAPI.getAll()
