@@ -157,16 +157,45 @@ function Chef() {
           })
         }
         
+        // Smart ingredient matching helper
+        const matchIngredient = (recipeIng, inventoryIng) => {
+          // Remove filler words that don't change the ingredient
+          const fillers = ['fresh', 'frozen', 'mixed', 'chopped', 'diced', 'sliced', 
+                          'minced', 'dried', 'canned', 'cooked', 'raw', 'whole',
+                          'ground', 'shredded', 'grated', 'crushed', 'peeled']
+          
+          const cleanIngredient = (ing) => {
+            let cleaned = ing.toLowerCase().trim()
+            fillers.forEach(filler => {
+              cleaned = cleaned.replace(new RegExp(`\\b${filler}\\b`, 'g'), '')
+            })
+            return cleaned.replace(/\s+/g, ' ').trim()
+          }
+          
+          const recipeClean = cleanIngredient(recipeIng)
+          const invClean = cleanIngredient(inventoryIng)
+          
+          // Exact match after cleaning
+          if (recipeClean === invClean) return true
+          
+          // Either contains the other
+          if (recipeClean.includes(invClean) || invClean.includes(recipeClean)) return true
+          
+          // Check if main words match
+          const recipeWords = recipeClean.split(' ').filter(w => w.length > 2)
+          const invWords = invClean.split(' ').filter(w => w.length > 2)
+          
+          // If any significant word matches, it's a match
+          return recipeWords.some(rw => invWords.includes(rw))
+        }
+        
         const hasIngredient = r.ingredients.map(ing => {
           // Assume they have pantry staples
           if (isPantryStaple(ing)) {
             return true
           }
-          // Check if in fridge
-          const ingLower = ing.toLowerCase()
-          return inventoryNames.some(inv => 
-            ingLower.includes(inv) || inv.includes(ingLower.split(' ')[0])
-          )
+          // Check if in fridge with smart matching
+          return inventoryNames.some(inv => matchIngredient(ing, inv))
         })
         
         // Separate main vs optional ingredients
@@ -176,10 +205,7 @@ function Chef() {
         const optionalIngredients = r.ingredients.filter((_, i) => isOptional[i])
         
         const hasMain = mainIngredients.map(ing => {
-          const ingLower = ing.toLowerCase()
-          return inventoryNames.some(inv => 
-            ingLower.includes(inv) || inv.includes(ingLower.split(' ')[0])
-          )
+          return inventoryNames.some(inv => matchIngredient(ing, inv))
         })
         
         const hasOptional = optionalIngredients.map(() => true) // Assume they have optional items
