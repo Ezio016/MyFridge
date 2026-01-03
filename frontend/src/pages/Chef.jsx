@@ -14,6 +14,9 @@ function Chef() {
   const [mode, setMode] = useState(MODE.HOME)
   const [inventory, setInventory] = useState([])
   const [recipes, setRecipes] = useState([])
+  const [allRecipes, setAllRecipes] = useState([]) // For explore mode
+  const [currentPage, setCurrentPage] = useState(1)
+  const [recipesPerPage] = useState(12) // Show 12 recipes per page
   const [filterExpiring, setFilterExpiring] = useState(false)
   const [selectedRecipe, setSelectedRecipe] = useState(null)
   const [completedSteps, setCompletedSteps] = useState([])
@@ -41,17 +44,18 @@ function Chef() {
     setMode(MODE.LOADING)
     setLoading(true)
     setFilterExpiring(false)
+    setCurrentPage(1) // Reset to first page
 
     try {
       console.log(`🍳 Loading ${type} recipes from database...`)
       
       let response
       if (type === 'lightning') {
-        // Get super quick recipes (under 15 min)
-        response = await recipeAPI.getQuick(15, 10)
+        // Get ALL quick recipes (under 15 min) for lightning mode
+        response = await recipeAPI.getQuick(15, 100) // Get up to 100 quick recipes
       } else {
-        // Get random recipes for exploration
-        response = await recipeAPI.getRandom(10)
+        // Get ALL recipes for exploration
+        response = await recipeAPI.getAll()
       }
       
       if (!response || !response.recipes || response.recipes.length === 0) {
@@ -103,6 +107,8 @@ function Chef() {
         const totalMainCount = mainIngredients.length
         const missingCount = hasIngredient.filter(h => !h).length
         
+        const hasAtLeastOneMain = hasMain.some(h => h) // Has at least 1 main ingredient
+        
         return {
           id: r.id || `recipe_${idx}`,
           name: r.name,
@@ -120,6 +126,7 @@ function Chef() {
           missingMainCount,
           totalMainCount,
           hasAll: missingMainCount === 0, // Only care about main ingredients
+          hasAtLeastOneMain, // New: for lightning filtering
           steps: r.instructions,
           description: r.description,
           tags: r.tags || [],
@@ -127,7 +134,27 @@ function Chef() {
         }
       })
       
-      setRecipes(formattedRecipes)
+      // Filter and sort based on mode
+      if (type === 'lightning') {
+        // Lightning: Only show recipes with at least 1 main ingredient match
+        const filtered = formattedRecipes.filter(r => r.hasAtLeastOneMain)
+        console.log(`⚡ Lightning filtered: ${filtered.length} recipes with your ingredients`)
+        setAllRecipes(filtered)
+        setRecipes(filtered) // Show all filtered recipes
+      } else {
+        // Explore: Show ALL recipes, sorted by hasAll (green first)
+        const sorted = [...formattedRecipes].sort((a, b) => {
+          // Green recipes (hasAll) come first
+          if (a.hasAll && !b.hasAll) return -1
+          if (!a.hasAll && b.hasAll) return 1
+          // Then sort by missing count (fewer missing = higher priority)
+          return a.missingMainCount - b.missingMainCount
+        })
+        console.log(`🧭 Explore: ${sorted.length} recipes (${sorted.filter(r => r.hasAll).length} ready to cook)`)
+        setAllRecipes(sorted)
+        setRecipes(sorted) // Will be paginated in render
+      }
+      
       setMode(MODE.RECIPES)
     } catch (err) {
       console.error('❌ Chef error:', err)
@@ -261,6 +288,20 @@ RULES:
     ? recipes.filter(r => r.usesExpiring)
     : recipes
 
+  // Pagination logic (only for explore mode)
+  const totalRecipes = filteredRecipes.length
+  const totalPages = Math.ceil(totalRecipes / recipesPerPage)
+  const startIndex = (currentPage - 1) * recipesPerPage
+  const endIndex = startIndex + recipesPerPage
+  const paginatedRecipes = recipeType === 'explore' 
+    ? filteredRecipes.slice(startIndex, endIndex)
+    : filteredRecipes // Lightning shows all (already filtered)
+
+  const goToPage = (page) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const selectRecipe = (recipe) => {
     setSelectedRecipe(recipe)
     setCompletedSteps([])
@@ -278,6 +319,8 @@ RULES:
   const goHome = () => {
     setMode(MODE.HOME)
     setRecipes([])
+    setAllRecipes([])
+    setCurrentPage(1)
     setSelectedRecipe(null)
     setCompletedSteps([])
     setFilterExpiring(false)
@@ -351,12 +394,20 @@ RULES:
 
             {filteredRecipes.length === 0 ? (
               <div className={styles.noRecipes}>
-                <p>No recipes match the filter</p>
+                <p>{recipeType === 'lightning' ? 'No recipes with your ingredients. Try adding items to your fridge!' : 'No recipes match the filter'}</p>
                 <button onClick={() => setFilterExpiring(false)}>Show all</button>
               </div>
             ) : (
-              <div className={styles.recipesGrid}>
-                {filteredRecipes.map((recipe) => (
+              <>
+                <div className={styles.recipeCount}>
+                  {recipeType === 'lightning' ? (
+                    <p>⚡ {filteredRecipes.length} quick recipes with your ingredients</p>
+                  ) : (
+                    <p>🧭 Showing {startIndex + 1}-{Math.min(endIndex, totalRecipes)} of {totalRecipes} recipes</p>
+                  )}
+                </div>
+                <div className={styles.recipesGrid}>
+                  {paginatedRecipes.map((recipe) => (
                   <div 
                     key={recipe.id}
                     className={`${styles.recipeCard} ${recipe.hasAll ? styles.hasAll : styles.missing}`}
@@ -394,6 +445,53 @@ RULES:
                   </div>
                 ))}
               </div>
+              
+              {/* Pagination for Explore mode */}
+              {recipeType === 'explore' && totalPages > 1 && (
+                <div className={styles.pagination}>
+                  <button 
+                    className={styles.pageBtn}
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    ← Previous
+                  </button>
+                  
+                  <div className={styles.pageNumbers}>
+                    {[...Array(totalPages)].map((_, i) => {
+                      const page = i + 1
+                      // Show first, last, current, and adjacent pages
+                      if (
+                        page === 1 || 
+                        page === totalPages || 
+                        (page >= currentPage - 1 && page <= currentPage + 1)
+                      ) {
+                        return (
+                          <button
+                            key={page}
+                            className={`${styles.pageNum} ${currentPage === page ? styles.active : ''}`}
+                            onClick={() => goToPage(page)}
+                          >
+                            {page}
+                          </button>
+                        )
+                      } else if (page === currentPage - 2 || page === currentPage + 2) {
+                        return <span key={page} className={styles.ellipsis}>...</span>
+                      }
+                      return null
+                    })}
+                  </div>
+                  
+                  <button 
+                    className={styles.pageBtn}
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
+              </>
             )}
           </div>
         )}

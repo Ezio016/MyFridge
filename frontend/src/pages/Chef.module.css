@@ -210,6 +210,15 @@
 }
 
 /* RECIPES GRID */
+.recipeCount {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
 .recipesGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -499,6 +508,76 @@
 .doneMessage p {
   color: var(--text-secondary);
   margin-bottom: 1rem;
+}
+
+/* PAGINATION */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 1rem 0;
+}
+
+.pageBtn {
+  padding: 0.5rem 1rem;
+  background: var(--bg-card);
+  border: 2px solid var(--wood-dark);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pageNumbers {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pageNum {
+  min-width: 36px;
+  height: 36px;
+  padding: 0.5rem;
+  background: var(--bg-card);
+  border: 2px solid var(--wood-dark);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pageNum:hover {
+  border-color: var(--accent);
+}
+
+.pageNum.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.ellipsis {
+  padding: 0 0.25rem;
+  color: var(--text-muted);
+  user-select: none;
 }
 
 @media (max-width: 400px) {
