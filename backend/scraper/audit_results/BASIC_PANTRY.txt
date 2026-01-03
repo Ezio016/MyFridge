@@ -1,0 +1,30 @@
+# Basic Pantry Items - Can be assumed available
+
+all-purpose flour
+ap flour
+balsamic vinegar
+black pepper
+butter
+canola oil
+cooking oil
+flour
+garlic
+garlic clove
+garlic powder
+granulated sugar
+oil
+olive oil
+onion
+onion powder
+pepper
+plain flour
+salt
+salted butter
+soy sauce
+sugar
+unsalted butter
+vegetable oil
+vinegar
+water
+white sugar
+white vinegar

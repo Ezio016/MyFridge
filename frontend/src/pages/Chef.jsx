@@ -73,11 +73,64 @@ function Chef() {
         const isPantryStaple = (ing) => {
           const ingLower = ing.toLowerCase().trim()
           
-          // Specialty ingredients are NEVER pantry staples
+          // Specialty ingredients are NEVER pantry staples (150+ keywords)
           const specialtyKeywords = [
+            // Specialty flours
             'chickpea', 'almond', 'coconut', 'rice flour', 'cornmeal',
-            'quinoa', 'specialty', 'fresh', 'greek', 'parmesan', 'cheddar',
-            'mozzarella', 'feta', 'cream cheese', 'sour cream', 'heavy cream'
+            'semolina', 'buckwheat', 'rye', 'spelt', 'quinoa flour',
+            'oat flour', 'whole wheat', 'bread flour', 'cake flour', 'self-raising',
+            
+            // Specialty dairy & cheeses
+            'parmesan', 'parmigiano', 'cheddar', 'mozzarella', 'feta',
+            'goat cheese', 'blue cheese', 'brie', 'camembert', 'gruyere',
+            'cream cheese', 'sour cream', 'heavy cream', 'whipping cream', 'double cream',
+            'greek yogurt', 'buttermilk', 'ricotta', 'mascarpone',
+            
+            // Specialty proteins
+            'prosciutto', 'pancetta', 'bacon', 'sausage', 'chorizo',
+            'lamb', 'veal', 'duck', 'venison', 'salmon', 'tuna',
+            'shrimp', 'prawns', 'lobster', 'crab', 'scallops',
+            'anchovies', 'sardines', 'beef', 'pork', 'chicken breast',
+            
+            // Specialty produce
+            'avocado', 'eggplant', 'aubergine', 'zucchini', 'courgette',
+            'asparagus', 'artichoke', 'fennel', 'leek', 'shallot',
+            'kale', 'arugula', 'rocket', 'spinach', 'bok choy',
+            'broccoli', 'cauliflower', 'brussels sprouts', 'beetroot',
+            
+            // Specialty condiments
+            'tahini', 'miso', 'curry paste', 'fish sauce', 'oyster sauce',
+            'hoisin', 'sriracha', 'harissa', 'pesto', 'capers',
+            'olives', 'sun-dried tomato', 'tomato paste', 'tomato puree',
+            
+            // Specialty herbs & spices
+            'saffron', 'cardamom', 'turmeric', 'cumin', 'coriander',
+            'paprika', 'cayenne', 'chili powder', 'curry powder',
+            'garam masala', 'five spice', 'oregano', 'thyme',
+            'rosemary', 'basil', 'cilantro', 'parsley', 'dill',
+            'mint', 'sage', 'tarragon', 'bay leaf',
+            
+            // Specialty nuts/seeds
+            'pine nuts', 'cashews', 'pistachios', 'hazelnuts',
+            'macadamia', 'pecans', 'walnuts', 'almonds',
+            'sesame seeds', 'sunflower seeds', 'pumpkin seeds',
+            'chia seeds', 'flax seeds',
+            
+            // Specialty sweeteners
+            'honey', 'maple syrup', 'agave', 'molasses',
+            'brown sugar', 'powdered sugar', 'confectioners',
+            
+            // Specialty grains/legumes
+            'quinoa', 'couscous', 'bulgur', 'farro', 'barley',
+            'lentils', 'chickpeas', 'black beans', 'kidney beans',
+            'basmati rice', 'jasmine rice', 'arborio',
+            
+            // Specialty liquids
+            'coconut milk', 'almond milk', 'wine', 'beer', 'sherry',
+            'stock', 'broth', 'bouillon',
+            
+            // Fresh items (always specialty)
+            'fresh', 'ripe', 'bunch', 'handful', 'sprig'
           ]
           if (specialtyKeywords.some(keyword => ingLower.includes(keyword))) {
             return false
@@ -269,17 +322,52 @@ RULES:
       // Check which ingredients we have (stricter matching)
       const inventoryNames = inventory.map(i => i.name.toLowerCase().trim())
       
-      // Smart pantry check (same as above)
+      // Smart pantry check (matches above - comprehensive list)
       const isPantryStaple = (ing) => {
         const ingLower = ing.toLowerCase().trim()
+        
+        // Same comprehensive specialty list as above
         const specialtyKeywords = [
           'chickpea', 'almond', 'coconut', 'rice flour', 'cornmeal',
-          'quinoa', 'specialty', 'fresh', 'greek', 'parmesan', 'cheddar',
-          'mozzarella', 'feta', 'cream cheese', 'sour cream', 'heavy cream'
+          'semolina', 'buckwheat', 'rye', 'spelt', 'quinoa flour',
+          'oat flour', 'whole wheat', 'bread flour', 'cake flour', 'self-raising',
+          'parmesan', 'parmigiano', 'cheddar', 'mozzarella', 'feta',
+          'goat cheese', 'blue cheese', 'brie', 'camembert', 'gruyere',
+          'cream cheese', 'sour cream', 'heavy cream', 'whipping cream', 'double cream',
+          'greek yogurt', 'buttermilk', 'ricotta', 'mascarpone',
+          'prosciutto', 'pancetta', 'bacon', 'sausage', 'chorizo',
+          'lamb', 'veal', 'duck', 'venison', 'salmon', 'tuna',
+          'shrimp', 'prawns', 'lobster', 'crab', 'scallops',
+          'anchovies', 'sardines', 'beef', 'pork', 'chicken breast',
+          'avocado', 'eggplant', 'aubergine', 'zucchini', 'courgette',
+          'asparagus', 'artichoke', 'fennel', 'leek', 'shallot',
+          'kale', 'arugula', 'rocket', 'spinach', 'bok choy',
+          'broccoli', 'cauliflower', 'brussels sprouts', 'beetroot',
+          'tahini', 'miso', 'curry paste', 'fish sauce', 'oyster sauce',
+          'hoisin', 'sriracha', 'harissa', 'pesto', 'capers',
+          'olives', 'sun-dried tomato', 'tomato paste', 'tomato puree',
+          'saffron', 'cardamom', 'turmeric', 'cumin', 'coriander',
+          'paprika', 'cayenne', 'chili powder', 'curry powder',
+          'garam masala', 'five spice', 'oregano', 'thyme',
+          'rosemary', 'basil', 'cilantro', 'parsley', 'dill',
+          'mint', 'sage', 'tarragon', 'bay leaf',
+          'pine nuts', 'cashews', 'pistachios', 'hazelnuts',
+          'macadamia', 'pecans', 'walnuts', 'almonds',
+          'sesame seeds', 'sunflower seeds', 'pumpkin seeds',
+          'chia seeds', 'flax seeds',
+          'honey', 'maple syrup', 'agave', 'molasses',
+          'brown sugar', 'powdered sugar', 'confectioners',
+          'quinoa', 'couscous', 'bulgur', 'farro', 'barley',
+          'lentils', 'chickpeas', 'black beans', 'kidney beans',
+          'basmati rice', 'jasmine rice', 'arborio',
+          'coconut milk', 'almond milk', 'wine', 'beer', 'sherry',
+          'stock', 'broth', 'bouillon',
+          'fresh', 'ripe', 'bunch', 'handful', 'sprig'
         ]
         if (specialtyKeywords.some(keyword => ingLower.includes(keyword))) {
           return false
         }
+        
         const basicPantry = [
           'salt', 'pepper', 'water', 
           'olive oil', 'vegetable oil', 'cooking oil', 'oil',
