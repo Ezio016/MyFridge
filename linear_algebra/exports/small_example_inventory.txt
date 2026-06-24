@@ -1,0 +1,15 @@
+Inventory Vector v:
+Items: ['eggs', 'milk', 'bread', 'butter', 'salt']
+Vector: [1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+
+Matrix-Vector Product R @ v:
+  French Toast: 5 matches
+  Pancakes: 4 matches
+  Omelette: 3 matches
+  Fried Rice: 2 matches
+  Pasta: 1 matches
+  Salad: 1 matches
+  Smoothie: 1 matches
+  Sandwich: 3 matches
+  Soup: 1 matches
+  Stir Fry: 1 matches

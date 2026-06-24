@@ -1,0 +1,250 @@
+{
+  "_comment": "ENHANCED RECIPE CARD - Complete Example",
+  
+  "id": "classic_italian_carbonara",
+  "source": "MyFridge - Enhanced",
+  "name": "Classic Italian Carbonara",
+  "description": "Authentic Roman pasta with silky egg sauce, crispy guanciale, and Pecorino Romano. No cream, just pure Italian technique.",
+  
+  "prep_time": 10,
+  "cook_time": 15,
+  "total_time": 25,
+  "servings": 4,
+  "difficulty": "medium",
+  
+  "ingredients": [
+    "1 pound spaghetti or rigatoni",
+    "6 ounces guanciale or pancetta, diced",
+    "4 large egg yolks",
+    "1 whole egg",
+    "1 cup freshly grated Pecorino Romano cheese",
+    "Freshly cracked black pepper (generous amount)",
+    "Salt for pasta water"
+  ],
+  
+  "instructions": [
+    "Bring a large pot of salted water to boil. Cook pasta 1 minute less than package directions for al dente.",
+    "While water heats, cook guanciale in a large skillet over medium heat for 8-10 minutes until crispy. Remove from heat.",
+    "In a bowl, whisk together egg yolks, whole egg, Pecorino Romano, and lots of black pepper.",
+    "Reserve 2 cups of pasta water before draining. Drain pasta.",
+    "Add hot pasta to the skillet with guanciale (off heat). Toss for 30 seconds.",
+    "Add 1/4 cup pasta water to the egg mixture and whisk quickly (tempering).",
+    "Pour egg mixture over pasta, tossing constantly. Add more pasta water as needed for creamy consistency.",
+    "Serve immediately with extra cheese and black pepper."
+  ],
+  
+  "tags": ["italian", "pasta", "dinner", "classic", "roman", "authentic"],
+  "cuisine": "Italian",
+  "category": "main",
+  "image_url": "",
+  
+  "ingredients_structured": [],
+  
+  "about": {
+    "long_description": "This Classic Italian Carbonara is the ultimate comfort food—a silky, creamy pasta dish made with just a few simple ingredients that come together to create something magical. Unlike Americanized versions with heavy cream, authentic carbonara gets its luxurious texture from the perfect emulsion of eggs, pasta water, and Pec
+
+orino Romano cheese. The crispy guanciale (or pancetta) adds a salty, savory depth that perfectly complements the rich sauce.\n\nWhat makes this recipe special is its simplicity and elegance. There's no cream, no garlic, no complications—just pure Italian technique. The heat from the hot pasta gently cooks the eggs without scrambling them, creating a sauce that clings to every strand. Each bite delivers that perfect balance of salty pork, sharp cheese, and creamy richness with a generous kick of black pepper.\n\nThis dish is perfect for a cozy weeknight dinner when you want something impressive but don't have hours to cook. It's also a wonderful date-night meal that shows you know your way around the kitchen. The whole thing comes together in about 25 minutes, making it ideal for busy evenings when takeout just won't cut it. Once you master the technique, you'll find yourself making it again and again—it's that good.",
+    
+    "origin": {
+      "region": "Rome, Lazio, Italy",
+      "history": "Carbonara emerged in mid-20th century Rome, though its exact origins are debated. Some say it was created by Italian charcoal workers (carbonari), while others credit American soldiers in WWII who mixed their bacon and eggs with pasta. What we know for certain is that it's now a Roman classic, protected by tradition and beloved worldwide.",
+      "traditional_context": "In Rome, carbonara is everyday comfort food, often enjoyed at lunch or dinner in casual trattorias. It's not considered fancy—just delicious, honest cooking that showcases quality ingredients and proper technique."
+    },
+    
+    "what_makes_it_special": "The magic of carbonara lies in its technique: creating a creamy, luxurious sauce without any cream at all. It's all about the emulsion—hot pasta water, eggs, cheese, and rendered pork fat coming together in perfect harmony. Master this, and you'll understand why Italians are so passionate about their food."
+  },
+  
+  "flavor_profile": {
+    "primary_flavors": ["savory", "umami", "salty"],
+    "intensity": "bold",
+    "texture": "Silky smooth sauce coating tender pasta with crispy pork bits providing textural contrast",
+    "aroma": "Rich and eggy with hints of sharp cheese, toasted pork fat, and freshly cracked pepper",
+    "mouthfeel": "Creamy and luxurious, each strand perfectly coated, with bursts of crispy, salty pork"
+  },
+  
+  "variations": [
+    {
+      "name": "Vegetarian Carbonara",
+      "description": "Plant-based version using mushrooms for umami depth",
+      "ingredient_swaps": [
+        {
+          "original": "Guanciale or pancetta",
+          "substitute": "6 oz smoked mushrooms (shiitake or portobello) + 1 tbsp miso paste",
+          "notes": "Provides similar smoky, umami flavors. Cook mushrooms until crispy."
+        },
+        {
+          "original": "Egg yolks and whole egg",
+          "substitute": "1 cup cashew cream + 3 tbsp nutritional yeast",
+          "notes": "Creates creamy texture with cheesy flavor. Blend soaked cashews until silky smooth."
+        },
+        {
+          "original": "Pecorino Romano cheese",
+          "substitute": "1/2 cup nutritional yeast + 1 tsp salt",
+          "notes": "Provides cheesy, umami flavor without dairy"
+        }
+      ]
+    },
+    {
+      "name": "Roman-Style (Ultra Traditional)",
+      "description": "The most authentic version with guanciale and pecorino",
+      "ingredient_swaps": [
+        {
+          "original": "Pancetta",
+          "substitute": "Guanciale (pork jowl)",
+          "notes": "Traditional choice, more flavorful and fatty. Worth seeking out at Italian markets."
+        },
+        {
+          "original": "Pecorino Romano",
+          "substitute": "100% Pecorino (no Parmesan blend)",
+          "notes": "Sharper, saltier, more traditional. Adjust salt in pasta water accordingly."
+        }
+      ]
+    },
+    {
+      "name": "Carbonara with Vegetables",
+      "description": "Adding vegetables while keeping it somewhat traditional",
+      "ingredient_swaps": [
+        {
+          "original": "None (addition)",
+          "substitute": "1 cup frozen peas or asparagus tips",
+          "notes": "Add to pasta in last 2 minutes of cooking. Provides freshness and color."
+        }
+      ]
+    }
+  ],
+  
+  "serving_suggestions": {
+    "best_served": "Immediately while piping hot (the sauce will continue to thicken as it cools)",
+    "pairs_well_with": [
+      "Simple arugula salad with lemon vinaigrette",
+      "Garlic bread or crusty Italian bread",
+      "Dry white wine (Pinot Grigio, Vermentino, or Frascati)",
+      "Sparkling water with lemon"
+    ],
+    "garnish_ideas": [
+      "Extra grated Pecorino Romano",
+      "Generous freshly cracked black pepper",
+      "Chopped fresh parsley (optional)",
+      "Red pepper flakes for heat lovers"
+    ],
+    "presentation_tips": "Use tongs to twirl pasta into a neat nest shape on the plate. Top with extra crispy guanciale pieces, a mound of grated Pecorino, and finish with a dramatic crack of black pepper. Serve in warmed bowls to keep it hot longer."
+  },
+  
+  "storage": {
+    "refrigerator": {
+      "duration": "2-3 days maximum",
+      "container": "Airtight container. Store sauce separately from pasta if possible.",
+      "notes": "Sauce will thicken significantly. Add 2-3 tablespoons of pasta water, milk, or cream when reheating to loosen it up."
+    },
+    "freezer": {
+      "can_freeze": false,
+      "duration": "Not recommended",
+      "thawing_instructions": "N/A",
+      "quality_notes": "Egg-based sauce doesn't freeze well—the eggs become grainy and the texture breaks down when thawed. This is a dish best enjoyed fresh."
+    },
+    "reheating": {
+      "best_method": "Stovetop with added liquid",
+      "instructions": "Heat gently in a non-stick pan over low heat. Add 3-4 tablespoons of pasta water, milk, or a splash of cream. Stir constantly to prevent eggs from scrambling. Heat just until warm (not boiling), adding more liquid as needed. Should take 3-4 minutes.",
+      "tips": "NEVER microwave on high—the eggs WILL scramble. If using microwave, use 30-50% power in 30-second intervals, stirring between each. Add liquid first, then heat."
+    }
+  },
+  
+  "tips_and_tricks": {
+    "pro_tips": [
+      "Reserve at LEAST 1-2 cups of pasta water—you might not use it all, but the starchy water is your insurance policy for silky sauce",
+      "Temper the eggs: Mix egg mixture with 1/4 cup hot pasta water first before adding to pasta. This prevents shocking cold eggs with hot pasta.",
+      "Remove pan from heat before adding eggs—residual heat is enough to cook them perfectly",
+      "Use room temperature eggs—they emulsify more smoothly with hot pasta and are less likely to scramble",
+      "Toss quickly and confidently—hesitation leads to clumping and uneven coating",
+      "The pasta water is liquid gold—its starch helps create the creamy emulsion",
+      "Don't skimp on black pepper—it's a key flavor component, not just seasoning"
+    ],
+    "common_mistakes": [
+      "Adding eggs to too-hot pasta → Results in scrambled eggs instead of creamy sauce. Always remove from heat first!",
+      "Not saving enough pasta water → Can't thin the sauce. Always reserve 2 cups minimum.",
+      "Using cold eggs straight from fridge → They don't emulsify well. Let them sit at room temp for 20 minutes.",
+      "Overcooking the guanciale → Becomes tough and chewy instead of crispy. Watch it carefully!",
+      "Adding cream → Not traditional and makes it heavy and greasy, masking the delicate egg flavor",
+      "Using pre-grated cheese → It contains anti-caking agents that prevent smooth melting. Always grate fresh!",
+      "Rinsing the pasta → Never! You need that starch for the sauce"
+    ],
+    "time_savers": [
+      "Start cooking guanciale while water comes to a boil",
+      "Mix eggs and cheese ahead of time (up to 2 hours, keep at room temp)",
+      "Grate cheese while pasta cooks",
+      "Use kitchen shears to cut guanciale instead of knife and board"
+    ],
+    "make_ahead": "This dish is best made fresh and served immediately. However, you can prep: (1) Dice guanciale, (2) Grate cheese, (3) Mix egg and cheese mixture—all up to 2-3 hours ahead. Keep egg mixture at room temperature (not fridge) for best results."
+  },
+  
+  "nutrition_highlights": {
+    "key_nutrients": [
+      "High in protein (20g per serving from eggs and pork)",
+      "Good source of calcium (from Pecorino Romano cheese)",
+      "Provides iron, B vitamins (especially B12), and selenium",
+      "Contains healthy fats from egg yolks and pork"
+    ],
+    "dietary_notes": [
+      "High in calories (~650-750 per serving) and saturated fat—best as an occasional indulgence",
+      "Can be made lower-carb by using zucchini noodles or hearts of palm pasta",
+      "Naturally gluten-free if using certified GF pasta",
+      "High in sodium due to cheese and cured pork—go easy on added salt"
+    ],
+    "allergen_warnings": [
+      "Contains: Eggs (major allergen)",
+      "Contains: Dairy - Pecorino Romano cheese (lactose)",
+      "Contains: Pork - not suitable for vegetarians/vegans or those avoiding pork for religious reasons",
+      "Contains: Wheat (if using regular pasta)"
+    ]
+  },
+  
+  "skill_building": {
+    "techniques_learned": [
+      "Tempering eggs (preventing scrambling with gradual heat)",
+      "Creating an emulsion (combining fat, protein, and liquid into smooth sauce)",
+      "Rendering fat from cured pork",
+      "Timing multiple components to finish simultaneously",
+      "Working with residual heat for gentle cooking",
+      "Pasta water techniques (using starchy water to adjust sauce consistency)"
+    ],
+    "difficulty_explanation": "Rated 'medium' because the ingredients list is short and simple, but the technique requires attention and practice. The key challenge is getting the temperature right—too hot and you scramble the eggs, too cold and the sauce won't come together. However, once you understand the technique, it becomes intuitive. Most people nail it by their second or third attempt.",
+    "beginner_friendly": false,
+    "advanced_variations": "Once you've mastered the basic technique, level up by: (1) Making your own fresh pasta, (2) Curing your own guanciale, (3) Adding white wine reduction to the rendered pork fat, (4) Experimenting with different pasta shapes (rigatoni is traditional Roman choice), (5) Trying regional variations like Carbonara alla Gricia (without eggs)"
+  },
+  
+  "community": {
+    "average_rating": 4.8,
+    "review_count": 1247,
+    "featured_reviews": [
+      {
+        "author": "Maria K.",
+        "rating": 5,
+        "comment": "Finally made authentic carbonara! The tip about tempering the eggs was a game-changer. I've tried other recipes and always ended up with scrambled eggs. This time it was perfect—silky, creamy, restaurant-quality. My Italian grandmother would be proud!",
+        "date": "2026-01-15",
+        "helpful_count": 234
+      },
+      {
+        "author": "James R.",
+        "rating": 4,
+        "comment": "Delicious! I scrambled the eggs on my first attempt (too impatient), but followed the tips more carefully the second time and it was perfect. The step-by-step instructions about removing from heat and tempering really help. Now it's in my regular dinner rotation.",
+        "date": "2026-01-10",
+        "helpful_count": 89
+      },
+      {
+        "author": "Sofia L.",
+        "rating": 5,
+        "comment": "As someone from Rome, I'm very picky about carbonara. This recipe is the real deal! No cream, no garlic, no onions—just the way it should be. The technique explanation is excellent. Only suggestion: use guanciale if you can find it, not pancetta. It makes a difference!",
+        "date": "2026-01-08",
+        "helpful_count": 156
+      }
+    ],
+    "chef_notes": "The key to perfect carbonara is confidence and timing. Don't be intimidated by the technique—once you make it successfully once, it becomes muscle memory. Start with room temperature eggs, always reserve extra pasta water, and remember: the pan should be hot from cooking the guanciale but OFF the heat when you add the eggs. You've got this! The first bite of silky, perfect carbonara you make yourself is absolutely worth the effort. —Chef Antonio",
+    "user_modifications": [
+      "Many users add a splash of white wine to deglaze the pan after cooking guanciale (not traditional but tasty)",
+      "Popular variation: 50/50 blend of Parmesan and Pecorino Romano for more complex, less salty flavor",
+      "Most home cooks substitute bacon for guanciale due to easier availability (works fine, just less authentic)",
+      "Some add a tiny pinch of nutmeg to the egg mixture for extra depth (common in Northern Italy)",
+      "Several users noted success with adding frozen peas in the last 2 minutes of pasta cooking for color and nutrition"
+    ]
+  }
+}

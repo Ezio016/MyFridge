@@ -1,4 +1,5 @@
 """FastAPI application entry point."""
+import os
 from dotenv import load_dotenv
 load_dotenv()  # Load .env file
 
@@ -8,6 +9,9 @@ from contextlib import asynccontextmanager
 
 from .database import engine, Base
 from .routes import inventory_router, chat_router, recipes_router
+from .routers.recipe_lab import router as recipe_lab_router
+from .routers.auth import router as auth_router
+from .routers.user import router as user_router
 
 
 @asynccontextmanager
@@ -30,18 +34,27 @@ app = FastAPI(
 )
 
 # CORS - allow frontend to connect
+# Security: Only allow specific origins
+ALLOWED_ORIGINS = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:5173,http://localhost:3000"  # Development defaults
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for deployed version
+    allow_origins=[origin.strip() for origin in ALLOWED_ORIGINS],  # Whitelist only
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Explicit methods
+    allow_headers=["Content-Type", "Authorization"],  # Explicit headers
 )
 
 # Include routers
 app.include_router(inventory_router, prefix="/api")
 app.include_router(chat_router, prefix="/api")
 app.include_router(recipes_router, prefix="/api")
+app.include_router(recipe_lab_router)  # Recipe Lab - already has /api/lab prefix
+app.include_router(auth_router)  # Auth - already has /api/auth prefix
+app.include_router(user_router)  # User - already has /api/user prefix
 
 
 @app.get("/")

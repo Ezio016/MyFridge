@@ -1,13 +1,13 @@
 import { NavLink } from 'react-router-dom'
-import { Refrigerator, ChefHat, ShoppingCart, Sparkles, User, Home } from 'lucide-react'
+import { Refrigerator, ChefHat, ShoppingCart, Sparkles, Settings, Home } from 'lucide-react'
 import styles from './Layout.module.css'
 
 function Layout({ children }) {
   return (
     <div className={styles.layout}>
-      {/* Profile button - top right */}
-      <NavLink to="/profile" className={styles.profileBtn}>
-        <User size={20} />
+      {/* Settings/Profile button - top right */}
+      <NavLink to="/profile" className={styles.profileBtn} title="Profile & Settings">
+        <Settings size={20} />
       </NavLink>
       
       <main className={styles.main}>
@@ -32,7 +32,7 @@ function Layout({ children }) {
           }
         >
           <ChefHat size={22} />
-          <span>Chef</span>
+          <span>Explore Recipes</span>
         </NavLink>
         
         {/* Big Home Button in Center */}

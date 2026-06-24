@@ -1,16 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Bookmark, Clock, ShoppingCart, Trash2, ChefHat } from 'lucide-react'
+import { ArrowLeft, Heart, Clock, ShoppingCart, Trash2, ChefHat, User } from 'lucide-react'
+import { useFavorites } from '../hooks/useFavorites'
 import styles from './Profile.module.css'
 
-function Profile({ savedRecipes, onUnsave }) {
+function Profile() {
   const navigate = useNavigate()
   const [selectedRecipe, setSelectedRecipe] = useState(null)
+  const { favorites, toggleFavorite } = useFavorites()
 
-  const addToCart = (ingredients) => {
+  const addToCart = (recipe) => {
+    // Get all ingredients from the recipe
+    const allIngredients = [
+      ...(recipe.mainIngredients || []),
+      ...(recipe.optionalIngredients || [])
+    ]
+    
     // Save to localStorage first
     const existing = JSON.parse(localStorage.getItem('cartItems') || '[]')
-    const newItems = ingredients.map(ing => ({
+    const newItems = allIngredients.map(ing => ({
       id: Date.now() + Math.random(),
       name: ing,
       checked: false
@@ -19,7 +27,7 @@ function Profile({ savedRecipes, onUnsave }) {
     localStorage.setItem('cartItems', JSON.stringify(updated))
     
     // Show feedback and navigate
-    alert(`Added ${ingredients.length} ingredients to cart!`)
+    alert(`Added ${allIngredients.length} ingredients to cart!`)
     
     // Small delay to ensure localStorage is synced before navigation
     setTimeout(() => {
@@ -31,30 +39,30 @@ function Profile({ savedRecipes, onUnsave }) {
     <div className={styles.page}>
       <div className="container">
         <header className={styles.header}>
-          <button className={styles.backBtn} onClick={() => navigate(-1)}>
-            <ArrowLeft size={20} />
-          </button>
+          <div className={styles.profileIcon}>
+            <User size={32} />
+          </div>
           <div>
             <h1>My Profile</h1>
-            <p>{savedRecipes.length} saved recipes</p>
+            <p>{favorites.length} favorite recipes</p>
           </div>
         </header>
 
-        {savedRecipes.length === 0 ? (
+        {favorites.length === 0 ? (
           <div className={styles.empty}>
-            <Bookmark size={48} />
-            <h3>No saved recipes yet</h3>
-            <p>Go to YummyTok and save recipes you like!</p>
-            <button className="btn btn-primary" onClick={() => navigate('/yummytok')}>
-              Explore YummyTok
+            <Heart size={48} />
+            <h3>No favorite recipes yet</h3>
+            <p>Go to Chef and favorite recipes you love!</p>
+            <button className="btn btn-primary" onClick={() => navigate('/chef')}>
+              Browse Recipes
             </button>
           </div>
         ) : (
           <div className={styles.recipesList}>
-            {savedRecipes.map(recipe => (
+            {favorites.map(recipe => (
               <div key={recipe.id} className={styles.recipeCard}>
                 <div className={styles.cardHeader}>
-                  <span className={styles.emoji}>{recipe.image}</span>
+                  <span className={styles.emoji}>{recipe.image || '🍽️'}</span>
                   <div className={styles.cardInfo}>
                     <h3>{recipe.name}</h3>
                     <div className={styles.meta}>
@@ -64,15 +72,16 @@ function Profile({ savedRecipes, onUnsave }) {
                   </div>
                   <button 
                     className={styles.removeBtn}
-                    onClick={() => onUnsave(recipe.id)}
+                    onClick={() => toggleFavorite(recipe)}
+                    title="Remove from favorites"
                   >
-                    <Trash2 size={18} />
+                    <Heart size={18} fill="currentColor" />
                   </button>
                 </div>
 
                 <div className={styles.cardBody}>
                   <div className={styles.ingredients}>
-                    <strong>Ingredients:</strong> {recipe.ingredients.join(', ')}
+                    <strong>Main Ingredients:</strong> {recipe.mainIngredients?.join(', ') || 'N/A'}
                   </div>
                 </div>
 
@@ -85,14 +94,21 @@ function Profile({ savedRecipes, onUnsave }) {
                   </button>
                   <button 
                     className={styles.cartBtn}
-                    onClick={() => addToCart(recipe.ingredients)}
+                    onClick={() => addToCart(recipe)}
                   >
                     <ShoppingCart size={16} />
                     Add to Cart
                   </button>
+                  <button 
+                    className={styles.cookBtn}
+                    onClick={() => navigate('/chef')}
+                  >
+                    <ChefHat size={16} />
+                    Cook Now
+                  </button>
                 </div>
 
-                {selectedRecipe?.id === recipe.id && (
+                {selectedRecipe?.id === recipe.id && recipe.steps && (
                   <div className={styles.steps}>
                     <h4>Steps:</h4>
                     <ol>

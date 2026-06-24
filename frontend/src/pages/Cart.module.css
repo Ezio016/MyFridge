@@ -124,6 +124,44 @@
   border-color: var(--accent);
 }
 
+/* Quantity Controls */
+.quantityControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  background: var(--bg-secondary);
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+}
+
+.qtyBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--wood-dark);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.qtyBtn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.quantity {
+  min-width: 30px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 .item.checked {
   opacity: 0.6;
   border-color: var(--fresh);

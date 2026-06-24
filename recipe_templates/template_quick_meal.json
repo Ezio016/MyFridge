@@ -1,0 +1,97 @@
+{
+  "id": "quick_recipe_name",
+  "source": "MyFridge",
+  "name": "Quick [Recipe Name]",
+  "description": "Fast and easy [dish] ready in under 30 minutes, perfect for busy weeknights!",
+  "prep_time": 10,
+  "cook_time": 15,
+  "total_time": 25,
+  "servings": 2,
+  "difficulty": "easy",
+  "ingredients": [
+    "2 cups quick-cooking carb (pasta, rice, noodles)",
+    "1 cup protein (eggs, canned tuna, rotisserie chicken)",
+    "1 cup frozen or fresh vegetables",
+    "2 tablespoons oil or butter",
+    "2 tablespoons sauce (soy sauce, pesto, marinara)",
+    "1 clove garlic, minced (optional)",
+    "Salt and pepper to taste"
+  ],
+  "instructions": [
+    "Cook carb according to package directions (or use pre-cooked).",
+    "While carb cooks, heat oil in a large skillet over medium-high heat.",
+    "Add vegetables and cook for 3-4 minutes until tender.",
+    "Add protein and sauce, stir to combine and heat through, 2-3 minutes.",
+    "Drain carb and add to skillet, toss everything together.",
+    "Season with salt and pepper, serve immediately."
+  ],
+  "tags": [
+    "quick",
+    "easy",
+    "weeknight",
+    "30-minutes",
+    "one-pan"
+  ],
+  "cuisine": "Universal",
+  "category": "main",
+  "image_url": "",
+  "popularity_score": 60.0,
+  "ingredients_structured": [
+    {
+      "item": "pasta",
+      "amount": "2 cups",
+      "original": "2 cups quick-cooking carb (pasta, rice, noodles)",
+      "role": "main",
+      "classification": "essential",
+      "category": "carb"
+    },
+    {
+      "item": "chicken",
+      "amount": "1 cup",
+      "original": "1 cup protein (eggs, canned tuna, rotisserie chicken)",
+      "role": "main",
+      "classification": "essential",
+      "category": "protein"
+    },
+    {
+      "item": "vegetables",
+      "amount": "1 cup",
+      "original": "1 cup frozen or fresh vegetables",
+      "role": "secondary",
+      "classification": "common",
+      "category": "produce"
+    },
+    {
+      "item": "oil",
+      "amount": "2 tablespoons",
+      "original": "2 tablespoons oil or butter",
+      "role": "secondary",
+      "classification": "common",
+      "category": "other"
+    },
+    {
+      "item": "soy sauce",
+      "amount": "2 tablespoons",
+      "original": "2 tablespoons sauce (soy sauce, pesto, marinara)",
+      "role": "secondary",
+      "classification": "common",
+      "category": "condiment"
+    },
+    {
+      "item": "garlic, minced",
+      "amount": "1 clove",
+      "original": "1 clove garlic, minced (optional)",
+      "role": "optional",
+      "classification": "optional",
+      "category": "produce"
+    },
+    {
+      "item": "Salt and pepper to taste",
+      "amount": "",
+      "original": "Salt and pepper to taste",
+      "role": "optional",
+      "classification": "optional",
+      "category": "spice"
+    }
+  ]
+}

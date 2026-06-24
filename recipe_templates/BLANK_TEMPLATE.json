@@ -1,0 +1,32 @@
+{
+  "_comment": "Fill in all fields below. Delete this _comment field when done.",
+  
+  "id": "",
+  "source": "MyFridge",
+  "name": "",
+  "description": "",
+  
+  "prep_time": 0,
+  "cook_time": 0,
+  "total_time": 0,
+  "servings": 0,
+  "difficulty": "easy",
+  
+  "ingredients": [
+    ""
+  ],
+  
+  "instructions": [
+    ""
+  ],
+  
+  "tags": [
+    ""
+  ],
+  
+  "cuisine": "",
+  "category": "main",
+  "image_url": "",
+  
+  "ingredients_structured": []
+}

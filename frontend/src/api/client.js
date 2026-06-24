@@ -2,7 +2,9 @@
  * API client for MyFridge backend
  */
 
-const API_BASE = 'https://myfridge-di8a.onrender.com/api';
+// Use localhost for development, production URL for deployed version
+const API_BASE = import.meta.env.VITE_API_URL || 
+  (import.meta.env.DEV ? 'http://localhost:8000/api' : 'https://myfridge-di8a.onrender.com/api');
 
 /**
  * Generic fetch wrapper with error handling
@@ -129,7 +131,7 @@ export const inventoryAPI = {
 
 export const chatAPI = {
   /**
-   * Send a message to AI Chef
+   * Send a message to the recipe assistant
    */
   send: (message) => fetchAPI('/chat/', {
     method: 'POST',
@@ -146,6 +148,22 @@ export const chatAPI = {
    */
   getQuickRecipe: (mealType = 'any') => 
     fetchAPI(`/chat/quick-recipe?meal_type=${mealType}`),
+
+  /**
+   * Chef controls assistant: returns structured actions to update filter/sort/customization UI state
+   */
+  controls: (message, state = {}, facets = {}) => fetchAPI('/chat/controls', {
+    method: 'POST',
+    body: JSON.stringify({ message, state, facets }),
+  }),
+
+  /**
+   * Customize a recipe based on modification request
+   */
+  customizeRecipe: (recipe, modificationRequest) => fetchAPI('/chat/customize-recipe', {
+    method: 'POST',
+    body: JSON.stringify({ recipe, modification_request: modificationRequest }),
+  }),
 };
 
 // ============ Recipe API ============
@@ -201,5 +219,91 @@ export const healthAPI = {
    * Check if API is healthy
    */
   check: () => fetchAPI('/health'),
+};
+
+// ============ Auth API ============
+
+export const authAPI = {
+  /**
+   * Register a new user
+   */
+  register: (email, password, name) => fetchAPI('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ email, password, name }),
+  }),
+
+  /**
+   * Login with email and password
+   */
+  login: (email, password) => fetchAPI('/auth/login/json', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  }),
+
+  /**
+   * Get current user info
+   */
+  me: (token) => fetchAPI('/auth/me', {
+    headers: { 'Authorization': `Bearer ${token}` },
+  }),
+
+  /**
+   * Verify token
+   */
+  verify: (token) => fetchAPI('/auth/verify', {
+    headers: { 'Authorization': `Bearer ${token}` },
+  }),
+};
+
+// ============ User API ============
+
+export const userAPI = {
+  /**
+   * Get user flavor profile
+   */
+  getFlavorProfile: (token) => fetchAPI('/user/flavor-profile', {
+    headers: { 'Authorization': `Bearer ${token}` },
+  }),
+
+  /**
+   * Log recipe interaction
+   */
+  logInteraction: (token, recipeId, interactionType) => fetchAPI('/user/interact', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ recipe_id: recipeId, interaction_type: interactionType }),
+  }),
+
+  /**
+   * Get favorites
+   */
+  getFavorites: (token) => fetchAPI('/user/favorites', {
+    headers: { 'Authorization': `Bearer ${token}` },
+  }),
+
+  /**
+   * Add to favorites
+   */
+  addFavorite: (token, recipeId) => fetchAPI(`/user/favorites/${recipeId}`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+  }),
+
+  /**
+   * Remove from favorites
+   */
+  removeFavorite: (token, recipeId) => fetchAPI(`/user/favorites/${recipeId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` },
+  }),
+
+  /**
+   * Get personalized recommendations
+   */
+  getRecommendations: (token, options = {}) => fetchAPI('/user/recommendations', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(options),
+  }),
 };
 

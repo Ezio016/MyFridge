@@ -1,0 +1,28 @@
+{
+  "matrix_shape": {
+    "rows (recipes)": 225,
+    "columns (ingredients)": 865
+  },
+  "sparsity": {
+    "total_elements": 194625,
+    "non_zero_elements": 2210,
+    "zero_elements": 192415,
+    "sparsity_percentage": 98.86
+  },
+  "recipe_statistics": {
+    "avg_ingredients_per_recipe": 9.82,
+    "min_ingredients": 2,
+    "max_ingredients": 20,
+    "std_ingredients": 3.73
+  },
+  "ingredient_statistics": {
+    "avg_recipes_per_ingredient": 2.55,
+    "most_common_ingredient": "garlic",
+    "most_common_count": 83,
+    "least_common_count": 1
+  },
+  "matrix_properties": {
+    "rank": 225,
+    "frobenius_norm": 47.01
+  }
+}

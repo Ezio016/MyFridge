@@ -1,30 +1,49 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-venv/
-.env
-*.db
-
-# Node
+# Dependencies
 node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Environment files (keep secrets safe!)
+.env
+.env.local
+.env.production
+backend/.env
+
+# Database
+*.db
+*.sqlite
+backend/myfridge.db
+backend/recipe_cache.sqlite
+
+# Build outputs
 dist/
-.vite/
+build/
+*.egg-info/
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+
+# OS
 .DS_Store
+Thumbs.db
 
 # Logs
 *.log
 npm-debug.log*
 
-groq api key
+# Backup files
+*.backup.*
+*.old.*
+*.bak
+
+# Test files
+test_*.py
+!tests/test_*.py
+backend/data/raw/Raw_recipes.csv
 backend/data/raw/*.csv
-backend/data/recipes.backup.json
-backend/data/recipes.before_dedup.json

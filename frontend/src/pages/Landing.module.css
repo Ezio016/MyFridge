@@ -5,6 +5,47 @@
   align-items: center;
   padding: 2rem 1rem;
   animation: fadeIn 0.6s ease-out;
+  position: relative;
+}
+
+.authHeader {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+}
+
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.userName {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.authBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-card);
+  border: 2px solid var(--wood-medium);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.authBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 @keyframes fadeIn {

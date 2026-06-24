@@ -1,5 +1,7 @@
 """AI Chef service for recipe generation and chat."""
 import os
+import json
+import re
 from groq import Groq
 from typing import Optional
 
@@ -184,6 +186,7 @@ async def chat_with_chef(
             messages=messages,
             temperature=0.7,
             max_tokens=8000,  # Increased for 50 recipes
+            timeout=30.0,  # 30 second timeout to prevent hanging
         )
         
         assistant_message = response.choices[0].message.content
@@ -279,6 +282,7 @@ Be enthusiastic and helpful! 🎉"""
             ],
             temperature=0.7,
             max_tokens=1000,
+            timeout=30.0,  # 30 second timeout
         )
         
         ai_message = response.choices[0].message.content
@@ -301,19 +305,28 @@ async def modify_recipe(recipe: dict, modification_request: str, user_preference
     except ValueError as e:
         return {
             "response": "AI Chef is not configured. Please set up your GROQ_API_KEY.",
-            "modified_recipe": None
+            "modified_title": None,
+            "ingredients": recipe.get('ingredients', []),
+            "steps": recipe.get('instructions', []),
+            "changes": {},
+            "time": recipe.get('time') or recipe.get('total_time'),
+            "difficulty": recipe.get('level') or recipe.get('difficulty')
         }
     
+    recipe_name = recipe.get('name', 'Unknown Recipe')
+    recipe_time = recipe.get('time') or recipe.get('total_time', 30)
+    recipe_ingredients = recipe.get('ingredients', [])
+    recipe_instructions = recipe.get('instructions', []) or recipe.get('steps', [])
+    
     recipe_text = f"""
-Recipe: {recipe['name']}
-Time: {recipe['total_time']} minutes
-Servings: {recipe['servings']}
+Recipe: {recipe_name}
+Time: {recipe_time} minutes
 
 Ingredients:
-{chr(10).join(f'- {ing}' for ing in recipe['ingredients'])}
+{chr(10).join(f'- {ing}' for ing in recipe_ingredients)}
 
 Instructions:
-{chr(10).join(f'{i+1}. {step}' for i, step in enumerate(recipe['instructions']))}
+{chr(10).join(f'{i+1}. {step}' for i, step in enumerate(recipe_instructions))}
 """
     
     prompt = f"""A user wants to modify this recipe:
@@ -322,39 +335,121 @@ Instructions:
 
 Their request: "{modification_request}"
 
-Please provide:
-1. A clear explanation of how to make this modification
-2. Updated ingredients list (if needed)
-3. Modified instructions (only the steps that change)
-4. Any tips or warnings about this modification
+IMPORTANT: Return your response in the following JSON format (without markdown code blocks):
+{{
+  "explanation": "A friendly explanation of the modifications",
+  "modified_title": "Modified Recipe Name (e.g., 'Modified Pad Thai with Chicken')",
+  "ingredients": ["2 cups flour", "1 lb chicken breast", "3 tablespoons olive oil", ...],
+  "steps": ["step 1", "step 2", ...],
+  "ingredient_changes": [
+    {{"index": 0, "type": "replaced", "original": "2 cups butter", "new": "2 cups olive oil"}},
+    {{"index": 1, "type": "added", "new": "1 teaspoon salt"}},
+    {{"index": 2, "type": "removed", "original": "1 cup sugar"}}
+  ],
+  "step_changes": [
+    {{"index": 0, "type": "modified", "original": "original step", "new": "modified step"}},
+    {{"index": 1, "type": "added", "new": "new step"}}
+  ],
+  "time": 35,
+  "difficulty": "medium"
+}}
 
-Be helpful and encouraging! Make sure your suggestions are practical and safe."""
+CRITICAL RULES:
+- ALWAYS include quantities, measurements, and portions with each ingredient (e.g., "2 cups flour" NOT just "flour")
+- KEEP the original measurements unless the user specifically asks to change portions
+- If replacing an ingredient, use the same measurement as the original (e.g., "2 cups butter" → "2 cups olive oil")
+- ingredient_changes and step_changes should track what was modified
+- type can be: "replaced", "added", "removed", "modified"
+- If no changes to an item, don't include it in the changes arrays
+- Be practical and safe with your modifications
+- Make sure the modified recipe is still delicious!"""
     
     try:
         response = groq_client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": "You are a helpful chef assistant. Always return valid JSON without markdown code blocks."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=1500,
+            max_tokens=2000,
+            timeout=30.0,  # 30 second timeout
         )
         
-        return {
-            "response": response.choices[0].message.content,
-            "original_recipe": recipe
+        raw_response = response.choices[0].message.content.strip()
+        
+        # Clean up JSON from response
+        import json
+        cleaned = _clean_json_from_text(raw_response)
+        
+        try:
+            data = json.loads(cleaned) if cleaned else {}
+        except json.JSONDecodeError:
+            # Fallback if JSON parsing fails
+            return {
+                "response": raw_response,
+                "modified_title": f"Modified {recipe_name}",
+                "ingredients": recipe_ingredients,
+                "steps": recipe_instructions,
+                "changes": {},
+                "time": recipe_time,
+                "difficulty": recipe.get('level') or recipe.get('difficulty', 'medium')
+            }
+        
+        # Build changes dict from arrays
+        changes = {
+            "ingredients": {},
+            "steps": {}
         }
+        
+        for change in data.get("ingredient_changes", []):
+            idx = change.get("index")
+            if idx is not None:
+                changes["ingredients"][idx] = {
+                    "type": change.get("type"),
+                    "original": change.get("original"),
+                    "new": change.get("new")
+                }
+        
+        for change in data.get("step_changes", []):
+            idx = change.get("index")
+            if idx is not None:
+                changes["steps"][idx] = {
+                    "type": change.get("type"),
+                    "original": change.get("original"),
+                    "new": change.get("new")
+                }
+        
+        return {
+            "response": data.get("explanation", "Recipe modified successfully!"),
+            "modified_title": data.get("modified_title", f"Modified {recipe_name}"),
+            "ingredients": data.get("ingredients", recipe_ingredients),
+            "steps": data.get("steps", recipe_instructions),
+            "changes": changes,
+            "time": data.get("time", recipe_time),
+            "difficulty": data.get("difficulty", recipe.get('level') or recipe.get('difficulty', 'medium'))
+        }
+        
     except Exception as e:
+        print(f"Error in modify_recipe: {e}")
         return {
             "response": f"Sorry, I couldn't help with that modification: {str(e)}",
-            "original_recipe": recipe
+            "modified_title": f"Modified {recipe_name}",
+            "ingredients": recipe_ingredients,
+            "steps": recipe_instructions,
+            "changes": {},
+            "time": recipe_time,
+            "difficulty": recipe.get('level') or recipe.get('difficulty', 'medium')
         }
 
 
 async def parse_voice_to_items(text: str) -> dict:
     """Parse voice input text into structured fridge items using AI."""
+    import json
+    import re
+    
     print(f"🎤 Parsing voice input: '{text}'")
+    result_text = ""  # Initialize to avoid UnboundLocalError
     
     try:
         groq_client = get_groq_client()
@@ -416,14 +511,11 @@ IMPORTANT:
             ],
             temperature=0.1,
             max_tokens=800,
+            timeout=30.0,  # 30 second timeout
         )
         
         result_text = response.choices[0].message.content.strip()
         print(f"📥 AI Response (first 300 chars): {result_text[:300]}")
-        
-        # Try to extract and clean JSON
-        import json
-        import re
         
         # Remove markdown code blocks
         result_text = re.sub(r'```json\s*', '', result_text)
@@ -460,11 +552,15 @@ IMPORTANT:
         
     except json.JSONDecodeError as e:
         print(f"❌ JSON parse error: {e}")
-        print(f"📄 Full raw response:\n{result_text}")
+        if result_text:
+            print(f"📄 Full raw response:\n{result_text}")
         
         # Last resort: try to extract item names with regex
         try:
             print("🚑 Attempting fallback parsing...")
+            if not result_text:
+                return {"items": [], "error": "No response from AI"}
+            
             # Look for quoted strings that might be item names
             item_matches = re.findall(r'"name"\s*:\s*"([^"]+)"', result_text)
             if item_matches:
@@ -494,4 +590,443 @@ IMPORTANT:
         return {
             "items": [],
             "error": f"Could not parse input: {str(e)}"
+        }
+
+
+# ==========================
+# Chef Controls Assistant
+# ==========================
+
+CHEF_CONTROLS_SYSTEM_PROMPT = """You are an assistant that controls UI filters/sort/customization for an AI Chef recipe browsing page.
+
+You MUST return ONLY valid JSON (no markdown).
+
+Your job:
+- Read the user's message and the current UI state.
+- Produce a friendly assistant_message.
+- Produce a list of actions to update the state.
+
+Allowed action format:
+{
+  "op": "set",
+  "path": "filters.expiringOnly|filters.readyOnly|filters.maxTimeMinutes|filters.maxMissingMain|filters.difficulty|filters.includeTags|filters.excludeTags|customization.diet|customization.excludeIngredients|customization.includeIngredients|customization.cuisine|customization.spiceLevel|sort.by|sort.direction",
+  "value": <any>
+}
+
+CRITICAL RULES:
+- Only use op='set'
+- Do NOT invent new paths.
+- ALWAYS PRESERVE EXISTING STATE: When adding to arrays like excludeIngredients or includeIngredients, you MUST merge with current_state values, not replace them!
+- For ingredient searching:
+  * Single ingredient word (e.g., "pork", "sour", "chicken") → ADD to includeIngredients (search FOR recipes WITH that ingredient)
+  * Explicit exclusion (e.g., "no pork", "without onions") → ADD to excludeIngredients (exclude recipes with that ingredient)
+  * COMMA-SEPARATED LISTS: "no onion, sour, beef" means "exclude onion" AND "include sour" AND "include beef" (3 separate actions!)
+  * Exception: If diet filter is active (vegan/vegetarian) and user types meat/dairy, treat as exclusion
+- ALL FILTERS WORK WITH AND LOGIC: If diet=vegan AND excludeIngredients=["pork"], then BOTH conditions must be satisfied (vegan AND no pork). This means even stricter filtering.
+- If the user asks to 'reset', set filters/customization/sort back to empty objects ({}).
+
+Examples of proper merging:
+- Current: {}, User: "pork" → New: {"includeIngredients": ["pork"]} (search FOR pork recipes)
+- Current: {}, User: "no pork" → New: {"excludeIngredients": ["pork"]} (exclude pork)
+- Current: {"diet": "vegan"}, User: "pork" → New: {"diet": "vegan", "excludeIngredients": ["pork"]} (vegan context = exclusion)
+- Current: {"includeIngredients": ["chicken"]}, User: "sour" → New: {"includeIngredients": ["chicken", "sour"]} (search for both)
+- Current: {}, User: "no onion, sour, beef" → New: {"excludeIngredients": ["onion"], "includeIngredients": ["sour", "beef"]} (3 filters!)
+"""
+
+
+def _clean_json_from_text(text: str) -> str:
+    """Extract the first JSON object from a model response."""
+    t = text.strip()
+    t = re.sub(r"```json\s*", "", t, flags=re.IGNORECASE)
+    t = re.sub(r"```\s*", "", t)
+    # Find first {...} block
+    m = re.search(r"\{[\s\S]*\}", t)
+    return m.group(0).strip() if m else ""
+
+
+def _apply_set_action(state: dict, path: str, value):
+    """Apply a dot-path set into a nested dict."""
+    parts = path.split(".")
+    cur = state
+    for p in parts[:-1]:
+        if p not in cur or not isinstance(cur[p], dict):
+            cur[p] = {}
+        cur = cur[p]
+    cur[parts[-1]] = value
+
+
+def _normalize_controls_state(state: Optional[dict]) -> dict:
+    if not isinstance(state, dict):
+        state = {}
+    return {
+        "filters": state.get("filters") if isinstance(state.get("filters"), dict) else {},
+        "customization": state.get("customization") if isinstance(state.get("customization"), dict) else {},
+        "sort": state.get("sort") if isinstance(state.get("sort"), dict) else {},
+    }
+
+
+def _fallback_controls_parser(message: str, current_state: dict) -> dict:
+    """Non-LLM fallback: basic keyword/regex parsing into actions."""
+    msg = (message or "").strip().lower()
+    actions = []
+    assistant_bits = []
+
+    def set_(path, value):
+        actions.append({"op": "set", "path": path, "value": value})
+
+    # Reset
+    if any(k in msg for k in ["reset", "clear filters", "clear all", "start over"]):
+        set_("filters", {})
+        set_("customization", {})
+        set_("sort", {})
+        assistant_bits.append("Reset filters, customization, and sorting.")
+        return {"assistant_message": "✅ Reset everything back to default.", "actions": actions}
+    
+    # Generic search/filter - if it's just a word or two, treat it as a tag/name filter
+    if len(msg.split()) <= 2 and not any(k in msg for k in ["show", "sort", "filter", "only", "under", "over"]):
+        # Simple query like "stews", "pasta", "chicken", etc.
+        assistant_bits.append(f"Searching for recipes with '{msg}'")
+        # Note: This would need backend support for general search
+        # For now, we'll just acknowledge it
+        return {
+            "assistant_message": f"🔍 Looking for recipes with '{msg}'. Try being more specific like 'Show me {msg}' or 'Sort by fastest'.",
+            "actions": []
+        }
+
+    # Filters
+    if "expiring" in msg:
+        if any(k in msg for k in ["only", "just", "show expiring"]):
+            set_("filters.expiringOnly", True)
+            assistant_bits.append("Showing only expiring recipes.")
+        if any(k in msg for k in ["off", "disable", "stop", "no expiring", "remove expiring"]):
+            set_("filters.expiringOnly", False)
+            assistant_bits.append("Turned off expiring-only filter.")
+
+    if any(k in msg for k in ["ready only", "only ready", "ready to cook only", "green only"]):
+        set_("filters.readyOnly", True)
+        assistant_bits.append("Showing only recipes you can cook right now.")
+    if any(k in msg for k in ["show all", "include not ready", "not ready too"]):
+        # Only toggle readyOnly off if user explicitly broadens results
+        if current_state.get("filters", {}).get("readyOnly") is True:
+            set_("filters.readyOnly", False)
+            assistant_bits.append("Including recipes that need extra items too.")
+
+    # Time: "under 20 minutes", "<= 15 min", "max 30"
+    m = re.search(r"(?:under|<=|less than|max)\s*(\d{1,3})\s*(?:m|min|minute|minutes)\b", msg)
+    if m:
+        set_("filters.maxTimeMinutes", int(m.group(1)))
+        assistant_bits.append(f"Filtering to recipes under {m.group(1)} minutes.")
+
+    # Missing main count: "missing at most 2", "max missing 1"
+    m = re.search(r"(?:max missing|missing at most|at most)\s*(\d{1,2})", msg)
+    if m:
+        set_("filters.maxMissingMain", int(m.group(1)))
+        assistant_bits.append(f"Allowing up to {m.group(1)} missing main ingredients.")
+
+    # Difficulty
+    diffs = []
+    for d in ["easy", "medium", "hard"]:
+        if re.search(rf"\b{d}\b", msg):
+            diffs.append(d)
+    if diffs and any(k in msg for k in ["only", "just", "filter"]):
+        set_("filters.difficulty", sorted(set(diffs)))
+        assistant_bits.append(f"Filtering difficulty to: {', '.join(sorted(set(diffs)))}.")
+
+    # Customization: diet
+    diet_set = False
+    if "vegan" in msg:
+        set_("customization.diet", "vegan")
+        assistant_bits.append("Applying vegan-friendly filtering.")
+        diet_set = True
+    elif "vegetarian" in msg:
+        set_("customization.diet", "vegetarian")
+        assistant_bits.append("Applying vegetarian-friendly filtering.")
+        diet_set = True
+    elif any(k in msg for k in ["gluten free", "gluten-free"]):
+        set_("customization.diet", "gluten_free")
+        assistant_bits.append("Applying gluten-free-friendly filtering.")
+        diet_set = True
+
+    # Parse ingredients - handle both exclusions and inclusions
+    excluded_items = []
+    included_items = []
+    
+    # Step 1: Extract explicit exclusions (no/exclude/without)
+    # Match patterns like "no onion", "exclude garlic", "without pork"
+    exclusion_pattern = r"\b(?:no|exclude|without)\s+([a-z][a-z\s-]{0,20}?)(?=\s*[,;]|\s+(?:and|or)\s+|\s*$)"
+    exclusion_matches = re.findall(exclusion_pattern, msg, re.IGNORECASE)
+    if exclusion_matches:
+        excluded_items = [x.strip(" ,.;") for x in exclusion_matches if x.strip()]
+    
+    # Step 2: Remove exclusion phrases from message to find remaining ingredients
+    msg_without_exclusions = msg
+    for exclusion_keyword in ["no ", "exclude ", "without "]:
+        msg_without_exclusions = re.sub(rf"\b{exclusion_keyword}[a-z\s-]{{1,25}}(?=[,;]|$|\s+(?:and|or)\s+)", "", msg_without_exclusions, flags=re.IGNORECASE)
+    
+    # Step 3: Extract remaining comma/and-separated ingredients as inclusions
+    # Split by commas, semicolons, "and", "or"
+    remaining = re.split(r'[,;]|\s+(?:and|or)\s+', msg_without_exclusions)
+    for item in remaining:
+        item = item.strip(" ,.;")
+        # Filter out common filler words and action words
+        words = [w for w in item.split() if w not in ["with", "have", "contains", "includes", "show", "find", "get", "the", "some"]]
+        if words and len(words) <= 3:
+            ingredient = " ".join(words)
+            # Don't add if it's a command word or already excluded
+            if ingredient not in ["sort", "filter", "only", "reset"] and ingredient not in excluded_items:
+                # If diet filter is active and it's meat/dairy, exclude instead
+                if diet_set:
+                    common_animal_products = ["pork", "beef", "chicken", "fish", "shellfish", "dairy", "milk", "eggs", 
+                                             "shrimp", "lamb", "bacon", "sausage", "turkey"]
+                    if any(prod in ingredient for prod in common_animal_products):
+                        excluded_items.append(ingredient)
+                        continue
+                included_items.append(ingredient)
+    
+    # Debug logging
+    print(f"🔍 Fallback Parser Debug:")
+    print(f"   Message: '{msg}'")
+    print(f"   Excluded items: {excluded_items}")
+    print(f"   Included items: {included_items}")
+    
+    # Debug: Print parsed ingredients
+    print(f"🔍 Parsed ingredients from '{msg}':")
+    print(f"   Excluded: {excluded_items}")
+    print(f"   Included: {included_items}")
+    
+    # Apply exclusions
+    if excluded_items:
+        existing = current_state.get("customization", {}).get("excludeIngredients")
+        if not isinstance(existing, list):
+            existing = []
+        merged = list(set(existing + excluded_items))  # Remove duplicates
+        set_("customization.excludeIngredients", merged)
+        assistant_bits.append(f"Excluding: {', '.join(excluded_items)}.")
+        print(f"   ✅ Set excludeIngredients to: {merged}")
+    
+    # Apply inclusions
+    if included_items:
+        existing = current_state.get("customization", {}).get("includeIngredients")
+        if not isinstance(existing, list):
+            existing = []
+        merged = list(set(existing + included_items))  # Remove duplicates
+        set_("customization.includeIngredients", merged)
+        assistant_bits.append(f"Looking for recipes with: {', '.join(included_items)}.")
+        print(f"   ✅ Set includeIngredients to: {merged}")
+    
+    print(f"   Final actions: {len(actions)} actions created")
+    
+    # Spice level / cuisine preferences
+    if any(k in msg for k in ["spicy", "hot", "heat", "spice"]):
+        set_("customization.spiceLevel", "spicy")
+        assistant_bits.append("Filtering for spicy recipes.")
+    
+    # Cuisine
+    cuisines = ["italian", "mexican", "chinese", "indian", "thai", "japanese", "korean", 
+                "french", "spanish", "greek", "mediterranean", "american", "cajun"]
+    for cuisine in cuisines:
+        if cuisine in msg:
+            set_("customization.cuisine", cuisine.capitalize())
+            assistant_bits.append(f"Filtering for {cuisine.capitalize()} cuisine.")
+            break
+
+    # Sorting
+    if "sort" in msg or "order" in msg:
+        if any(k in msg for k in ["fastest", "quickest", "shortest time"]):
+            set_("sort.by", "fastest")
+            set_("sort.direction", "asc")
+            assistant_bits.append("Sorting by fastest first.")
+        elif any(k in msg for k in ["popular", "popularity", "top rated", "best"]):
+            set_("sort.by", "most_popular")
+            set_("sort.direction", "desc")
+            assistant_bits.append("Sorting by popularity.")
+        elif any(k in msg for k in ["fewest missing", "least missing", "missing"]):
+            set_("sort.by", "fewest_missing")
+            set_("sort.direction", "asc")
+            assistant_bits.append("Sorting by fewest missing main ingredients.")
+        elif any(k in msg for k in ["a-z", "alphabetical", "name"]):
+            set_("sort.by", "alphabetical")
+            set_("sort.direction", "asc")
+            assistant_bits.append("Sorting alphabetically (A–Z).")
+        elif any(k in msg for k in ["default", "ranked", "recommended"]):
+            set_("sort.by", "ranked")
+            assistant_bits.append("Using the default ranked order.")
+
+    if not actions:
+        return {
+            "assistant_message": "Tell me what to change (e.g. “under 20 min”, “ready-only”, “sort by fastest”, “no onions”).",
+            "actions": []
+        }
+
+    return {
+        "assistant_message": "✅ " + " ".join(assistant_bits) if assistant_bits else "✅ Updated your filters/sort.",
+        "actions": actions
+    }
+
+
+async def chat_for_chef_controls(message: str, state: dict, facets: Optional[dict] = None) -> dict:
+    """
+    Parse a user message into UI control actions for filters/sort/customization.
+    Returns: { assistant_message, actions, new_state }
+    """
+    facets = facets or {}
+    normalized = _normalize_controls_state(state)
+
+    # Try Groq if configured; fallback otherwise.
+    try:
+        groq_client = get_groq_client()
+    except (ValueError, Exception) as e:
+        print(f"⚠️ Groq not available ({e}), using fallback parser")
+        parsed = _fallback_controls_parser(message, normalized)
+        new_state = _normalize_controls_state(normalized)
+        for a in parsed.get("actions", []):
+            if a.get("op") == "set" and isinstance(a.get("path"), str):
+                _apply_set_action(new_state, a["path"], a.get("value"))
+        return {
+            "assistant_message": parsed.get("assistant_message", ""),
+            "actions": parsed.get("actions", []),
+            "new_state": new_state
+        }
+
+    allowed_paths = [
+        "filters", "customization", "sort",
+        "filters.expiringOnly", "filters.readyOnly", "filters.maxTimeMinutes", "filters.maxMissingMain",
+        "filters.difficulty", "filters.includeTags", "filters.excludeTags",
+        "customization.diet", "customization.excludeIngredients", "customization.includeIngredients",
+        "customization.cuisine", "customization.spiceLevel",
+        "sort.by", "sort.direction",
+    ]
+
+    prompt = {
+        "message": message,
+        "current_state": normalized,
+        "facets": facets,
+        "allowed_paths": allowed_paths,
+        "examples": [
+            {
+                "user": "Show only ready recipes under 20 minutes. Sort by fastest.",
+                "current_state": {"filters": {}, "customization": {}, "sort": {}},
+                "json": {
+                    "assistant_message": "Got it — ready-only, under 20 minutes, fastest first.",
+                    "actions": [
+                        {"op": "set", "path": "filters.readyOnly", "value": True},
+                        {"op": "set", "path": "filters.maxTimeMinutes", "value": 20},
+                        {"op": "set", "path": "sort.by", "value": "fastest"},
+                        {"op": "set", "path": "sort.direction", "value": "asc"},
+                    ],
+                },
+            },
+            {
+                "user": "pork",
+                "current_state": {"filters": {}, "customization": {}, "sort": {}},
+                "json": {
+                    "assistant_message": "Searching for recipes with pork.",
+                    "actions": [
+                        {"op": "set", "path": "customization.includeIngredients", "value": ["pork"]},
+                    ],
+                },
+            },
+            {
+                "user": "no dairy",
+                "current_state": {"filters": {}, "customization": {"includeIngredients": ["pork"]}, "sort": {}},
+                "json": {
+                    "assistant_message": "Excluding dairy. Looking for pork recipes without dairy.",
+                    "actions": [
+                        {"op": "set", "path": "customization.excludeIngredients", "value": ["dairy"]},
+                    ],
+                },
+            },
+            {
+                "user": "chicken",
+                "current_state": {"filters": {}, "customization": {"diet": "vegan"}, "sort": {}},
+                "json": {
+                    "assistant_message": "Added chicken to excluded ingredients since you're filtering for vegan recipes.",
+                    "actions": [
+                        {"op": "set", "path": "customization.excludeIngredients", "value": ["chicken"]},
+                    ],
+                },
+            },
+            {
+                "user": "beef",
+                "current_state": {"filters": {}, "customization": {"includeIngredients": ["pork"]}, "sort": {}},
+                "json": {
+                    "assistant_message": "Looking for recipes with pork and beef.",
+                    "actions": [
+                        {"op": "set", "path": "customization.includeIngredients", "value": ["pork", "beef"]},
+                    ],
+                },
+            },
+            {
+                "user": "no onion",
+                "current_state": {"filters": {}, "customization": {"excludeIngredients": ["dairy"]}, "sort": {}},
+                "json": {
+                    "assistant_message": "Excluding onion and dairy.",
+                    "actions": [
+                        {"op": "set", "path": "customization.excludeIngredients", "value": ["dairy", "onion"]},
+                    ],
+                },
+            },
+            {
+                "user": "no onion, sour, beef",
+                "current_state": {"filters": {}, "customization": {}, "sort": {}},
+                "json": {
+                    "assistant_message": "Excluding onion. Looking for recipes with sour and beef.",
+                    "actions": [
+                        {"op": "set", "path": "customization.excludeIngredients", "value": ["onion"]},
+                        {"op": "set", "path": "customization.includeIngredients", "value": ["sour", "beef"]},
+                    ],
+                },
+            },
+        ],
+    }
+
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "system", "content": CHEF_CONTROLS_SYSTEM_PROMPT},
+                {"role": "user", "content": json.dumps(prompt)},
+            ],
+            temperature=0.2,
+            max_tokens=1200,
+            timeout=30.0,  # 30 second timeout
+        )
+        raw = response.choices[0].message.content or ""
+        cleaned = _clean_json_from_text(raw)
+        data = json.loads(cleaned) if cleaned else {}
+    except Exception as e:
+        print(f"⚠️ Groq API call failed: {e}")
+        data = {}
+
+    # Validate / fallback if model output is unusable
+    if not isinstance(data, dict) or "actions" not in data:
+        parsed = _fallback_controls_parser(message, normalized)
+        data = parsed
+
+    actions = data.get("actions", [])
+    if not isinstance(actions, list):
+        actions = []
+
+    # Apply actions (only allowed paths + set op)
+    new_state = _normalize_controls_state(normalized)
+    safe_actions = []
+    for a in actions:
+        if not isinstance(a, dict):
+            continue
+        if a.get("op") != "set":
+            continue
+        path = a.get("path")
+        if not isinstance(path, str) or path not in allowed_paths:
+            continue
+        safe_actions.append({"op": "set", "path": path, "value": a.get("value")})
+        _apply_set_action(new_state, path, a.get("value"))
+
+    assistant_message = data.get("assistant_message")
+    if not isinstance(assistant_message, str) or not assistant_message.strip():
+        assistant_message = "✅ Updated your filters/sort."
+
+    return {
+        "assistant_message": assistant_message.strip(),
+        "actions": safe_actions,
+        "new_state": new_state,
         }

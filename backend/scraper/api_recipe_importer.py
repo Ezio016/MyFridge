@@ -34,10 +34,11 @@ from typing import List, Dict, Optional
 from pathlib import Path
 import re
 
-# Import our legal recipe importer
+# Import our legal recipe importer and classifier
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from legal_recipe_importer import LegalRecipeImporter
+from classify_ingredients import classify_recipe_ingredients
 
 
 class APIRecipeImporter:
@@ -418,6 +419,8 @@ class APIRecipeImporter:
             # Create legal recipe
             try:
                 legal_recipe = self.legal_importer.create_legal_recipe(raw_recipe, use_ai=use_ai)
+                # Classify ingredients
+                legal_recipe = classify_recipe_ingredients(legal_recipe)
                 new_recipes.append(legal_recipe)
                 self.stats['imported'] += 1
                 

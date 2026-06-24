@@ -1,9 +1,11 @@
-import { Refrigerator, ChefHat, Video, ShoppingCart } from 'lucide-react'
+import { Refrigerator, ChefHat, Video, ShoppingCart, FlaskConical, LogIn, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import styles from './Landing.module.css'
 
 function Landing() {
   const navigate = useNavigate()
+  const { user, isAuthenticated, logout } = useAuth()
 
   const features = [
     {
@@ -16,7 +18,7 @@ function Landing() {
     },
     {
       icon: ChefHat,
-      title: 'AI Chef',
+      title: 'Explore Recipes',
       description: 'Get personalized recipes & cooking guides',
       color: '#e87f4a',
       path: '/chef',
@@ -37,11 +39,38 @@ function Landing() {
       color: '#22c55e',
       path: '/cart',
       emoji: '🛒'
+    },
+    {
+      icon: FlaskConical,
+      title: 'Creative Meals',
+      description: 'Fuse, remix & generate recipes',
+      color: '#e91e63',
+      path: '/lab',
+      emoji: '✨'
     }
   ]
 
   return (
     <div className={styles.page}>
+      <div className={styles.authHeader}>
+        {isAuthenticated ? (
+          <div className={styles.userMenu}>
+            <span className={styles.userName}>
+              <User size={16} />
+              {user?.name || user?.email?.split('@')[0]}
+            </span>
+            <button onClick={logout} className={styles.authBtn}>
+              Sign Out
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => navigate('/login')} className={styles.authBtn}>
+            <LogIn size={16} />
+            Sign In
+          </button>
+        )}
+      </div>
+      
       <div className={styles.hero}>
         <div className={styles.logo}>
           <span className={styles.logoEmoji}>🧊</span>

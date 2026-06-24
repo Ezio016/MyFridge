@@ -172,11 +172,14 @@ def main():
     
     # Add missing fields to match schema
     from legal_recipe_importer import LegalRecipeImporter
+    from classify_ingredients import classify_recipe_ingredients
     importer = LegalRecipeImporter()
     
     processed_recipes = []
     for recipe in new_recipes:
         processed = importer.create_legal_recipe(recipe, use_ai=False)
+        # Classify ingredients
+        processed = classify_recipe_ingredients(processed)
         processed_recipes.append(processed)
         print(f"  ✅ {processed['name']}")
     

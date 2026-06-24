@@ -1,0 +1,110 @@
+{
+  "_comment": "ENHANCED RECIPE TEMPLATE - Fill in all sections for rich, comprehensive recipe cards",
+  
+  "id": "",
+  "source": "MyFridge",
+  "name": "",
+  "description": "",
+  
+  "prep_time": 0,
+  "cook_time": 0,
+  "total_time": 0,
+  "servings": 0,
+  "difficulty": "easy",
+  
+  "ingredients": [],
+  "instructions": [],
+  
+  "tags": [],
+  "cuisine": "",
+  "category": "main",
+  "image_url": "",
+  
+  "ingredients_structured": [],
+  
+  "about": {
+    "long_description": "",
+    "origin": {
+      "region": "",
+      "history": "",
+      "traditional_context": ""
+    },
+    "what_makes_it_special": ""
+  },
+  
+  "flavor_profile": {
+    "primary_flavors": [],
+    "intensity": "mild",
+    "texture": "",
+    "aroma": "",
+    "mouthfeel": ""
+  },
+  
+  "variations": [
+    {
+      "name": "",
+      "description": "",
+      "ingredient_swaps": [
+        {
+          "original": "",
+          "substitute": "",
+          "notes": ""
+        }
+      ]
+    }
+  ],
+  
+  "serving_suggestions": {
+    "best_served": "",
+    "pairs_well_with": [],
+    "garnish_ideas": [],
+    "presentation_tips": ""
+  },
+  
+  "storage": {
+    "refrigerator": {
+      "duration": "",
+      "container": "",
+      "notes": ""
+    },
+    "freezer": {
+      "can_freeze": false,
+      "duration": "",
+      "thawing_instructions": "",
+      "quality_notes": ""
+    },
+    "reheating": {
+      "best_method": "",
+      "instructions": "",
+      "tips": ""
+    }
+  },
+  
+  "tips_and_tricks": {
+    "pro_tips": [],
+    "common_mistakes": [],
+    "time_savers": [],
+    "make_ahead": ""
+  },
+  
+  "nutrition_highlights": {
+    "key_nutrients": [],
+    "dietary_notes": [],
+    "allergen_warnings": []
+  },
+  
+  "skill_building": {
+    "techniques_learned": [],
+    "difficulty_explanation": "",
+    "beginner_friendly": true,
+    "advanced_variations": ""
+  },
+  
+  "community": {
+    "average_rating": 0,
+    "review_count": 0,
+    "featured_reviews": [],
+    "chef_notes": "",
+    "user_modifications": []
+  }
+}

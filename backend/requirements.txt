@@ -3,12 +3,18 @@ fastapi>=0.109.0
 uvicorn[standard]>=0.27.0
 sqlalchemy>=2.0.25
 pydantic>=2.5.3
+pydantic[email]>=2.5.3
 openai>=1.10.0
 groq>=0.4.0
 python-dotenv>=1.0.0
 python-multipart>=0.0.6
 gunicorn>=21.2.0
 psycopg2-binary>=2.9.9
+
+# Authentication
+passlib[bcrypt]>=1.7.4
+python-jose[cryptography]>=3.3.0
+bcrypt>=4.0.0
 
 # Recipe scraping
 beautifulsoup4>=4.14.0

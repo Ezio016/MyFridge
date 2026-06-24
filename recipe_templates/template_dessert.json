@@ -1,0 +1,108 @@
+{
+  "id": "dessert_name",
+  "source": "MyFridge",
+  "name": "Your Dessert Name",
+  "description": "Sweet and delicious [dessert type] perfect for [occasion]",
+  "prep_time": 20,
+  "cook_time": 30,
+  "total_time": 50,
+  "servings": 8,
+  "difficulty": "medium",
+  "ingredients": [
+    "2 cups all-purpose flour",
+    "1 cup sugar",
+    "1/2 cup butter, softened",
+    "2 large eggs",
+    "1 cup milk",
+    "2 teaspoons baking powder",
+    "1 teaspoon vanilla extract",
+    "1/4 teaspoon salt"
+  ],
+  "instructions": [
+    "Preheat oven to 350°F (175°C). Grease and flour a 9x13 inch baking pan.",
+    "In a large bowl, cream together butter and sugar until light and fluffy.",
+    "Beat in eggs one at a time, then stir in vanilla extract.",
+    "In a separate bowl, combine flour, baking powder, and salt.",
+    "Gradually add dry ingredients to wet ingredients, alternating with milk.",
+    "Pour batter into prepared pan and spread evenly.",
+    "Bake for 25-30 minutes or until a toothpick inserted in center comes out clean.",
+    "Allow to cool completely before frosting or serving."
+  ],
+  "tags": [
+    "dessert",
+    "baked",
+    "sweet",
+    "party",
+    "holiday"
+  ],
+  "cuisine": "American",
+  "category": "dessert",
+  "image_url": "",
+  "popularity_score": 55.0,
+  "ingredients_structured": [
+    {
+      "item": "all-purpose flour",
+      "amount": "2 cups",
+      "original": "2 cups all-purpose flour",
+      "role": "main",
+      "classification": "essential",
+      "category": "carb"
+    },
+    {
+      "item": "sugar",
+      "amount": "1 cup",
+      "original": "1 cup sugar",
+      "role": "main",
+      "classification": "essential",
+      "category": "other"
+    },
+    {
+      "item": "butter, softened",
+      "amount": "1/2 cup",
+      "original": "1/2 cup butter, softened",
+      "role": "main",
+      "classification": "essential",
+      "category": "dairy"
+    },
+    {
+      "item": "eggs",
+      "amount": "2 large",
+      "original": "2 large eggs",
+      "role": "main",
+      "classification": "essential",
+      "category": "protein"
+    },
+    {
+      "item": "milk",
+      "amount": "1 cup",
+      "original": "1 cup milk",
+      "role": "secondary",
+      "classification": "common",
+      "category": "dairy"
+    },
+    {
+      "item": "baking powder",
+      "amount": "2 teaspoons",
+      "original": "2 teaspoons baking powder",
+      "role": "secondary",
+      "classification": "common",
+      "category": "other"
+    },
+    {
+      "item": "vanilla extract",
+      "amount": "1 teaspoon",
+      "original": "1 teaspoon vanilla extract",
+      "role": "secondary",
+      "classification": "common",
+      "category": "condiment"
+    },
+    {
+      "item": "salt",
+      "amount": "1/4 teaspoon",
+      "original": "1/4 teaspoon salt",
+      "role": "optional",
+      "classification": "optional",
+      "category": "spice"
+    }
+  ]
+}

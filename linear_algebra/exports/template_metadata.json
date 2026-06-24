@@ -1,0 +1,89 @@
+{
+  "description": "Recipe-Ingredient Template Matrix",
+  "dimensions": {
+    "rows": 225,
+    "columns": 30
+  },
+  "ingredients": [
+    "chicken",
+    "beef",
+    "pork",
+    "fish",
+    "eggs",
+    "tofu",
+    "milk",
+    "butter",
+    "cheese",
+    "cream",
+    "onion",
+    "garlic",
+    "tomato",
+    "potato",
+    "carrot",
+    "pepper",
+    "mushroom",
+    "spinach",
+    "rice",
+    "pasta",
+    "bread",
+    "flour",
+    "olive_oil",
+    "vegetable_oil",
+    "salt",
+    "sugar",
+    "soy_sauce",
+    "vinegar",
+    "lemon",
+    "ginger"
+  ],
+  "ingredient_groups": {
+    "proteins": [
+      "chicken",
+      "beef",
+      "pork",
+      "fish",
+      "eggs",
+      "tofu"
+    ],
+    "dairy": [
+      "milk",
+      "butter",
+      "cheese",
+      "cream"
+    ],
+    "vegetables": [
+      "onion",
+      "garlic",
+      "tomato",
+      "potato",
+      "carrot",
+      "pepper",
+      "mushroom",
+      "spinach"
+    ],
+    "grains": [
+      "rice",
+      "pasta",
+      "bread",
+      "flour"
+    ],
+    "oils": [
+      "olive_oil",
+      "vegetable_oil"
+    ],
+    "seasonings": [
+      "salt",
+      "sugar",
+      "soy_sauce",
+      "vinegar",
+      "lemon",
+      "ginger"
+    ]
+  },
+  "statistics": {
+    "total_recipes": 225,
+    "non_zero_entries": 1250,
+    "sparsity_percent": 81.48,
+    "avg_ingredients_per_recipe": 5.56
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "id": "your_recipe_name_here",
+  "source": "MyFridge",
+  "name": "Your Recipe Name",
+  "description": "A delicious [cuisine] [dish type] with [main ingredients]. Ready in [time] minutes!",
+  "prep_time": 15,
+  "cook_time": 30,
+  "total_time": 45,
+  "servings": 4,
+  "difficulty": "medium",
+  "ingredients": [
+    "1 pound main protein (chicken, beef, tofu, etc.)",
+    "2 cups main vegetable or carb",
+    "1 tablespoon cooking oil",
+    "2 cloves garlic, minced",
+    "1 onion, diced",
+    "1 cup liquid (broth, water, coconut milk)",
+    "2 tablespoons sauce or seasoning",
+    "Salt and pepper to taste",
+    "Fresh herbs for garnish (optional)"
+  ],
+  "instructions": [
+    "Prepare all ingredients: chop vegetables, measure spices, etc.",
+    "Heat oil in a large pan or pot over medium-high heat.",
+    "Add protein and cook until browned, about 5-7 minutes. Remove and set aside.",
+    "In the same pan, sauté onions and garlic until fragrant, about 2 minutes.",
+    "Add vegetables and cook for 3-4 minutes until slightly softened.",
+    "Return protein to pan, add liquid and seasonings.",
+    "Bring to a boil, then reduce heat and simmer for 15-20 minutes.",
+    "Adjust seasoning with salt and pepper to taste.",
+    "Garnish with fresh herbs and serve hot."
+  ],
+  "tags": [
+    "dinner",
+    "main-dish",
+    "cuisine-type",
+    "dietary-tag-if-applicable"
+  ],
+  "cuisine": "Choose: Italian, Mexican, Chinese, Indian, Thai, American, Mediterranean, etc.",
+  "category": "main",
+  "image_url": "",
+  "popularity_score": 50.0,
+  "ingredients_structured": [
+    {
+      "item": "chicken breast",
+      "amount": "1 pound",
+      "original": "1 pound main protein (chicken, beef, tofu, etc.)",
+      "role": "main",
+      "classification": "essential",
+      "category": "protein"
+    },
+    {
+      "item": "broccoli",
+      "amount": "2 cups",
+      "original": "2 cups main vegetable or carb",
+      "role": "main",
+      "classification": "essential",
+      "category": "produce"
+    },
+    {
+      "item": "cooking oil",
+      "amount": "1 tablespoon",
+      "original": "1 tablespoon cooking oil",
+      "role": "secondary",
+      "classification": "common",
+      "category": "other"
+    },
+    {
+      "item": "garlic, minced",
+      "amount": "2 cloves",
+      "original": "2 cloves garlic, minced",
+      "role": "secondary",
+      "classification": "common",
+      "category": "produce"
+    },
+    {
+      "item": "onion, diced",
+      "amount": "1",
+      "original": "1 onion, diced",
+      "role": "secondary",
+      "classification": "common",
+      "category": "produce"
+    },
+    {
+      "item": "chicken broth",
+      "amount": "1 cup",
+      "original": "1 cup liquid (broth, water, coconut milk)",
+      "role": "secondary",
+      "classification": "common",
+      "category": "other"
+    },
+    {
+      "item": "soy sauce",
+      "amount": "2 tablespoons",
+      "original": "2 tablespoons sauce or seasoning",
+      "role": "secondary",
+      "classification": "common",
+      "category": "condiment"
+    },
+    {
+      "item": "Salt and pepper to taste",
+      "amount": "",
+      "original": "Salt and pepper to taste",
+      "role": "optional",
+      "classification": "optional",
+      "category": "spice"
+    },
+    {
+      "item": "Fresh herbs for garnish",
+      "amount": "",
+      "original": "Fresh herbs for garnish (optional)",
+      "role": "optional",
+      "classification": "optional",
+      "category": "produce"
+    }
+  ]
+}

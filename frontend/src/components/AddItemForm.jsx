@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { X, Plus, Save, Refrigerator, Snowflake, Package } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { X, Plus, Save, Refrigerator, Snowflake, Package, ChevronDown } from 'lucide-react'
 import VoiceInput from './VoiceInput'
 import styles from './AddItemForm.module.css'
 
@@ -67,6 +67,15 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
   })
   const [loading, setLoading] = useState(false)
   const [useVoice, setUseVoice] = useState(false)
+  
+  // Autocomplete state
+  const defaultUnit = UNITS.find(u => u.value === 'pieces')
+  const [unitSearch, setUnitSearch] = useState(defaultUnit?.label || '')
+  const [showUnitDropdown, setShowUnitDropdown] = useState(false)
+  const [filteredUnits, setFilteredUnits] = useState(UNITS)
+  const [selectedUnitIndex, setSelectedUnitIndex] = useState(0)
+  const unitInputRef = useRef(null)
+  const unitDropdownRef = useRef(null)
 
   // Populate form if editing
   useEffect(() => {
@@ -80,8 +89,39 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
         expiration_date: editItem.expiration_date || '',
         notes: editItem.notes || '',
       })
+      // Set unit search to show current unit label
+      const currentUnit = UNITS.find(u => u.value === (editItem.unit || 'pieces'))
+      setUnitSearch(currentUnit?.label || '')
     }
   }, [editItem])
+
+  // Filter units based on search
+  useEffect(() => {
+    if (unitSearch.trim()) {
+      const query = unitSearch.toLowerCase()
+      const filtered = UNITS.filter(unit => 
+        unit.label.toLowerCase().includes(query) ||
+        unit.value.toLowerCase().includes(query)
+      )
+      setFilteredUnits(filtered)
+      setSelectedUnitIndex(0)
+    } else {
+      setFilteredUnits(UNITS)
+      setSelectedUnitIndex(0)
+    }
+  }, [unitSearch])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (unitDropdownRef.current && !unitDropdownRef.current.contains(e.target) &&
+          unitInputRef.current && !unitInputRef.current.contains(e.target)) {
+        setShowUnitDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -133,6 +173,65 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
       setLoading(false)
     }
   }
+
+  // Handle unit search input
+  const handleUnitSearchChange = (e) => {
+    setUnitSearch(e.target.value)
+    setShowUnitDropdown(true)
+  }
+
+  // Handle unit selection
+  const handleUnitSelect = (unit) => {
+    setFormData(prev => ({ ...prev, unit: unit.value }))
+    setUnitSearch(unit.label)
+    setShowUnitDropdown(false)
+    setSelectedUnitIndex(0)
+  }
+
+  // Handle keyboard navigation in unit dropdown
+  const handleUnitKeyDown = (e) => {
+    if (!showUnitDropdown) {
+      if (e.key === 'ArrowDown' || e.key === 'Enter') {
+        setShowUnitDropdown(true)
+        e.preventDefault()
+      }
+      return
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setSelectedUnitIndex(prev => 
+          prev < filteredUnits.length - 1 ? prev + 1 : prev
+        )
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        setSelectedUnitIndex(prev => prev > 0 ? prev - 1 : prev)
+        break
+      case 'Enter':
+        e.preventDefault()
+        if (filteredUnits[selectedUnitIndex]) {
+          handleUnitSelect(filteredUnits[selectedUnitIndex])
+        }
+        break
+      case 'Escape':
+        setShowUnitDropdown(false)
+        break
+      default:
+        break
+    }
+  }
+
+  // Scroll selected item into view
+  useEffect(() => {
+    if (showUnitDropdown && unitDropdownRef.current) {
+      const selectedElement = unitDropdownRef.current.querySelector(`.${styles.selected}`)
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      }
+    }
+  }, [selectedUnitIndex, showUnitDropdown])
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -201,16 +300,47 @@ function AddItemForm({ onSubmit, onClose, editItem = null }) {
             </div>
             <div className={styles.field}>
               <label htmlFor="unit">Unit</label>
-              <select
+              <div className={styles.autocompleteWrapper}>
+                <input
+                  ref={unitInputRef}
+                  type="text"
                 id="unit"
-                name="unit"
-                value={formData.unit}
-                onChange={handleChange}
-              >
-                {UNITS.map(u => (
-                  <option key={u.value} value={u.value}>{u.label}</option>
-                ))}
-              </select>
+                  className={styles.autocompleteInput}
+                  value={unitSearch}
+                  onChange={handleUnitSearchChange}
+                  onFocus={() => setShowUnitDropdown(true)}
+                  onKeyDown={handleUnitKeyDown}
+                  placeholder="Type to search units..."
+                  autoComplete="off"
+                />
+                <ChevronDown 
+                  size={16} 
+                  className={styles.dropdownIcon}
+                  onClick={() => setShowUnitDropdown(!showUnitDropdown)}
+                />
+                {showUnitDropdown && (
+                  <div ref={unitDropdownRef} className={styles.autocompleteDropdown}>
+                    {filteredUnits.length > 0 ? (
+                      filteredUnits.map((unit, index) => (
+                        <div
+                          key={unit.value}
+                          className={`${styles.autocompleteOption} ${
+                            index === selectedUnitIndex ? styles.selected : ''
+                          } ${formData.unit === unit.value ? styles.active : ''}`}
+                          onClick={() => handleUnitSelect(unit)}
+                          onMouseEnter={() => setSelectedUnitIndex(index)}
+                        >
+                          {unit.label}
+                        </div>
+                      ))
+                    ) : (
+                      <div className={styles.autocompleteEmpty}>
+                        No units found
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

@@ -1,63 +1,61 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { ShoppingCart, Plus, Trash2, Check } from 'lucide-react'
+import { ShoppingCart, Plus, Trash2, Check, Minus } from 'lucide-react'
+import { getCart, addToCart, removeFromCart, toggleChecked, clearCart, clearCheckedItems, updateQuantity } from '../utils/cartUtils'
 import styles from './Cart.module.css'
-
-// Helper to get cart from localStorage
-const getCartFromStorage = () => {
-  try {
-    const saved = localStorage.getItem('cartItems')
-    return saved ? JSON.parse(saved) : []
-  } catch (e) {
-    return []
-  }
-}
 
 function Cart() {
   const location = useLocation()
   const [items, setItems] = useState([])
   const [newItem, setNewItem] = useState('')
-  const [isLoaded, setIsLoaded] = useState(false)
 
-  // Load from localStorage on every navigation to this page
+  // Load cart from localStorage
+  const loadCart = () => {
+    setItems(getCart())
+  }
+
+  // Load on mount and when navigating to this page
   useEffect(() => {
-    const loaded = getCartFromStorage()
-    setItems(loaded)
-    setIsLoaded(true)
+    loadCart()
   }, [location.pathname])
-
-  // Save to localStorage whenever items change (only after initial load)
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('cartItems', JSON.stringify(items))
-    }
-  }, [items, isLoaded])
 
   const addItem = (e) => {
     e.preventDefault()
     if (!newItem.trim()) return
     
-    setItems(prev => [...prev, { id: Date.now(), name: newItem.trim(), checked: false }])
+    addToCart(newItem.trim(), 1)
     setNewItem('')
+    loadCart()
   }
 
   const toggleItem = (id) => {
-    setItems(prev => prev.map(item => 
-      item.id === id ? { ...item, checked: !item.checked } : item
-    ))
+    toggleChecked(id)
+    loadCart()
   }
 
   const removeItem = (id) => {
-    setItems(prev => prev.filter(item => item.id !== id))
+    removeFromCart(id)
+    loadCart()
+  }
+
+  const changeQuantity = (id, delta) => {
+    const item = items.find(i => i.id === id)
+    if (item) {
+      const newQty = Math.max(1, (item.quantity || 1) + delta)
+      updateQuantity(id, newQty)
+      loadCart()
+    }
   }
 
   const clearChecked = () => {
-    setItems(prev => prev.filter(item => !item.checked))
+    clearCheckedItems()
+    loadCart()
   }
 
   const clearAll = () => {
     if (confirm('Clear all items?')) {
-      setItems([])
+      clearCart()
+      loadCart()
     }
   }
 
@@ -112,6 +110,23 @@ function Cart() {
                     <div className={styles.checkCircle} />
                   </button>
                   <span className={styles.itemName}>{item.name}</span>
+                  
+                  <div className={styles.quantityControls}>
+                    <button 
+                      className={styles.qtyBtn}
+                      onClick={() => changeQuantity(item.id, -1)}
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <span className={styles.quantity}>{item.quantity || 1}</span>
+                    <button 
+                      className={styles.qtyBtn}
+                      onClick={() => changeQuantity(item.id, 1)}
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                  
                   <button 
                     className={styles.deleteBtn}
                     onClick={() => removeItem(item.id)}
@@ -139,7 +154,9 @@ function Cart() {
                           <Check size={14} />
                         </div>
                       </button>
-                      <span className={styles.itemName}>{item.name}</span>
+                      <span className={styles.itemName}>
+                        {item.name} {item.quantity > 1 && `(x${item.quantity})`}
+                      </span>
                       <button 
                         className={styles.deleteBtn}
                         onClick={() => removeItem(item.id)}

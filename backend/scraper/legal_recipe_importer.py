@@ -21,6 +21,7 @@ import json
 import os
 from typing import Dict, List
 import time
+import sys
 
 # Try to import Groq for AI rewriting
 try:
@@ -29,6 +30,13 @@ try:
 except ImportError:
     GROQ_AVAILABLE = False
     print("⚠️ Groq not available. Install with: pip install groq")
+
+# Import classifier if available
+try:
+    from classify_ingredients import classify_recipe_ingredients
+    CLASSIFIER_AVAILABLE = True
+except ImportError:
+    CLASSIFIER_AVAILABLE = False
 
 class LegalRecipeImporter:
     """
@@ -210,6 +218,10 @@ Format as JSON:
             'category': facts['category'],
             'image_url': ''  # We'll use free stock photos or generate
         }
+        
+        # Classify ingredients if classifier is available
+        if CLASSIFIER_AVAILABLE:
+            recipe = classify_recipe_ingredients(recipe)
         
         return recipe
     

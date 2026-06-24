@@ -1,0 +1,243 @@
+/* Recipe Modification Chat */
+
+.container {
+  position: fixed;
+  bottom: 100px;
+  right: 16px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+/* Floating Action Button */
+.fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-muted));
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(232, 127, 74, 0.4);
+  transition: all 0.3s ease;
+}
+
+.fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 28px rgba(232, 127, 74, 0.5);
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+.fabOpen {
+  background: var(--bg-card);
+  border: 2px solid var(--wood-dark);
+  color: var(--text-secondary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.fabOpen:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Panel */
+.panel {
+  background: var(--bg-card);
+  border: 2px solid var(--wood-dark);
+  border-radius: 20px;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  height: 400px;
+  max-height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.25s ease-out;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--wood-dark);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.header svg {
+  color: var(--accent);
+}
+
+/* Messages Area */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.welcome {
+  text-align: center;
+  padding: 8px;
+}
+
+.welcome p {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.quickMods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.quickBtn {
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--wood-dark);
+  border-radius: 16px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quickBtn:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.message {
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  max-width: 85%;
+  word-wrap: break-word;
+}
+
+.message.user {
+  background: var(--accent);
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.message.assistant {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Input Area */
+.inputArea {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--wood-dark);
+  flex-shrink: 0;
+}
+
+.inputArea input {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--wood-dark);
+  border-radius: 20px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.inputArea input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.inputArea input::placeholder {
+  color: var(--text-muted);
+}
+
+.inputArea button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.inputArea button:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: scale(1.05);
+}
+
+.inputArea button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mobile adjustments */
+@media (max-width: 400px) {
+  .container {
+    right: 12px;
+    bottom: 90px;
+  }
+  
+  .panel {
+    width: calc(100vw - 24px);
+    height: 350px;
+  }
+  
+  .quickBtn {
+    font-size: 0.7rem;
+    padding: 6px 10px;
+  }
+}
