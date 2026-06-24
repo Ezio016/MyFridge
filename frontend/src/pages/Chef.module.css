@@ -131,39 +131,26 @@
 .creativeMealsButton {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  justify-content: center;
+  gap: 0.5rem;
   width: 100%;
-  max-width: 500px;
-  padding: 0.9rem 1rem;
+  padding: 0.875rem 1rem;
   background: rgba(233, 30, 99, 0.12);
   border: 2px solid rgba(233, 30, 99, 0.35);
-  border-radius: var(--radius);
+  border-radius: 10px;
   color: #f472b6;
-  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
   cursor: pointer;
   transition: all 0.2s;
+  height: fit-content;
 }
 
 .creativeMealsButton:hover {
   background: rgba(233, 30, 99, 0.18);
   border-color: #e91e63;
   transform: translateY(-1px);
-}
-
-.creativeMealsButton span {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.creativeMealsButton strong {
-  color: var(--text-primary);
-  font-size: 0.95rem;
-}
-
-.creativeMealsButton small {
-  color: var(--text-secondary);
-  font-size: 0.78rem;
 }
 
 .backBtn {
@@ -295,6 +282,12 @@
 }
 
 /* Top Right: Ingredients Button (Smaller) */
+.filterButtonGroup {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
 .ingredientsButton {
   padding: 0.875rem 1.25rem;
   background: rgba(74, 222, 128, 0.1);
@@ -1699,6 +1692,10 @@
 }
 
 @media (max-width: 400px) {
+  .filterButtonGroup {
+    grid-template-columns: 1fr;
+  }
+
   .recipesGrid {
     grid-template-columns: 1fr;
   }

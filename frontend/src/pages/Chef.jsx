@@ -1144,17 +1144,6 @@ function Chef() {
                 )}
               </div>
 
-              <button
-                type="button"
-                className={styles.creativeMealsButton}
-                onClick={() => navigate('/lab')}
-              >
-                <FlaskConical size={20} />
-                <span>
-                  <strong>Creative Meals</strong>
-                  <small>Fuse, remix & generate recipes</small>
-                </span>
-              </button>
             </div>
 
             {/* Filter Bar - 2x2 Grid */}
@@ -1183,8 +1172,9 @@ function Chef() {
                 </select>
 
                 {/* Top Right: Only Use Ingredients in Fridge */}
+                <div className={styles.filterButtonGroup}>
                   <button
-                  className={`${styles.ingredientsButton} ${controlsState.filters?.readyOnly ? styles.active : ''}`}
+                    className={`${styles.ingredientsButton} ${controlsState.filters?.readyOnly ? styles.active : ''}`}
                     onClick={() => {
                       setControlsState(prev => {
                         const n = normalizeControlsState(prev)
@@ -1192,8 +1182,17 @@ function Chef() {
                       })
                     }}
                   >
-                  ✨ Only Use ingredients in Fridge
+                    ✨ Only Use ingredients in Fridge
                   </button>
+                  <button
+                    type="button"
+                    className={styles.creativeMealsButton}
+                    onClick={() => navigate('/lab')}
+                  >
+                    <FlaskConical size={18} />
+                    Creative Meals
+                  </button>
+                </div>
 
                 {/* Bottom Left: Prep Time */}
                 <select
