@@ -1,4 +1,4 @@
-import { Package, ChefHat, Video, ShoppingCart, FlaskConical, LogIn, User } from 'lucide-react'
+import { Package, ChefHat, Video, ShoppingCart, LogIn, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import styles from './Landing.module.css'
@@ -40,14 +40,6 @@ function Landing() {
       path: '/cart',
       emoji: '🛒'
     },
-    {
-      icon: FlaskConical,
-      title: 'Creative Meals',
-      description: 'Fuse, remix & generate recipes',
-      color: '#e91e63',
-      path: '/lab',
-      emoji: '✨'
-    }
   ]
 
   return (

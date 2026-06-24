@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { ChefHat, Clock, ArrowLeft, Check, Heart, ShoppingCart, Search, X, Send, Loader, Palette } from 'lucide-react'
+import { ChefHat, Clock, ArrowLeft, Check, Heart, ShoppingCart, Search, X, Send, Loader, Palette, FlaskConical } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { inventoryAPI, recipeAPI, chatAPI, userAPI } from '../api/client'
 import { API_BASE } from '../api/config'
 import { useAuth } from '../context/AuthContext'
@@ -17,6 +18,7 @@ const MODE = {
 }
 
 function Chef() {
+  const navigate = useNavigate()
   const [mode, setMode] = useState(MODE.LOADING)
   const [inventory, setInventory] = useState([])
   const [baseRecipes, setBaseRecipes] = useState([]) // Ranked/base order from backend + local ranking logic
@@ -1141,6 +1143,18 @@ function Chef() {
                   </button>
                 )}
               </div>
+
+              <button
+                type="button"
+                className={styles.creativeMealsButton}
+                onClick={() => navigate('/lab')}
+              >
+                <FlaskConical size={20} />
+                <span>
+                  <strong>Creative Meals</strong>
+                  <small>Fuse, remix & generate recipes</small>
+                </span>
+              </button>
             </div>
 
             {/* Filter Bar - 2x2 Grid */}
