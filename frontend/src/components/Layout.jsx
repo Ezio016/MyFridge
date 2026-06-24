@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { Refrigerator, ChefHat, ShoppingCart, Sparkles, Settings, Home } from 'lucide-react'
+import { Package, ChefHat, ShoppingCart, Sparkles, Settings, Home } from 'lucide-react'
 import styles from './Layout.module.css'
 
 function Layout({ children }) {
@@ -21,8 +21,8 @@ function Layout({ children }) {
             `${styles.navItem} ${isActive ? styles.active : ''}`
           }
         >
-          <Refrigerator size={22} />
-          <span>Fridge</span>
+          <Package size={22} />
+          <span>Inventory</span>
         </NavLink>
         
         <NavLink 

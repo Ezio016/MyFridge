@@ -1,4 +1,4 @@
-import { Refrigerator, ChefHat, Video, ShoppingCart, FlaskConical, LogIn, User } from 'lucide-react'
+import { Package, ChefHat, Video, ShoppingCart, FlaskConical, LogIn, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import styles from './Landing.module.css'
@@ -9,12 +9,12 @@ function Landing() {
 
   const features = [
     {
-      icon: Refrigerator,
-      title: 'My Fridge',
+      icon: Package,
+      title: 'Inventory',
       description: 'Manage your inventory with voice input',
       color: '#3b82f6',
       path: '/fridge',
-      emoji: '🧊'
+      emoji: '📦'
     },
     {
       icon: ChefHat,
@@ -73,7 +73,7 @@ function Landing() {
       
       <div className={styles.hero}>
         <div className={styles.logo}>
-          <img className={styles.logoIcon} src="/fridge.svg" alt="" aria-hidden="true" />
+          <Package className={styles.logoIcon} aria-hidden="true" />
           <h1>MyFridge</h1>
         </div>
         <p className={styles.tagline}>

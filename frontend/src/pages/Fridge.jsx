@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, AlertTriangle, Sparkles, ShoppingCart, Search, X } from 'lucide-react'
+import { Plus, Package, AlertTriangle, Sparkles, ShoppingCart, Search, X } from 'lucide-react'
 import { inventoryAPI, recipeAPI } from '../api/client'
 import InventoryList from '../components/InventoryList'
 import AddItemForm from '../components/AddItemForm'
@@ -455,10 +455,10 @@ function Fridge() {
       <div className="container">
         <header className={styles.header}>
           <div className={styles.iconWrap}>
-            <img src="/fridge.svg" alt="" aria-hidden="true" />
+            <Package size={30} aria-hidden="true" />
           </div>
           <div>
-            <h1>My Fridge</h1>
+            <h1>Inventory</h1>
             <p>
               {items.length} items
               {expiringCount > 0 && <span className={styles.warning}> · {expiringCount} expiring</span>}
