@@ -2,9 +2,7 @@
  * API client for MyFridge backend
  */
 
-// Use localhost for development, production URL for deployed version
-const API_BASE = import.meta.env.VITE_API_URL || 
-  (import.meta.env.DEV ? 'http://localhost:8000/api' : 'https://myfridge-di8a.onrender.com/api');
+import { API_BASE } from './config'
 
 /**
  * Generic fetch wrapper with error handling

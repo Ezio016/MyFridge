@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ChefHat, Clock, ArrowLeft, Check, Heart, ShoppingCart, Search, X, Send, Loader, Palette } from 'lucide-react'
 import { inventoryAPI, recipeAPI, chatAPI, userAPI } from '../api/client'
+import { API_BASE } from '../api/config'
 import { useAuth } from '../context/AuthContext'
 import { useFavorites } from '../hooks/useFavorites'
 import { addMultipleToCart } from '../utils/cartUtils'
@@ -931,8 +932,7 @@ function Chef() {
     if (!recipe) return
     setLoadingFlavor(true)
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-      const res = await fetch(`${API_URL}/api/lab/flavor/analyze`, {
+      const res = await fetch(`${API_BASE}/lab/flavor/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ingredients: recipe.ingredients || [] })
@@ -993,8 +993,7 @@ function Chef() {
     
     setRemixLoading(true)
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-      const res = await fetch(`${API_URL}/api/lab/remix`, {
+      const res = await fetch(`${API_BASE}/lab/remix`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
