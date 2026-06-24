@@ -26,7 +26,7 @@ function Landing() {
     },
     {
       icon: Video,
-      title: 'YummyTok',
+      title: 'Food Village',
       description: 'Swipe through recipe videos',
       color: '#8b5cf6',
       path: '/yummytok',

@@ -13,7 +13,7 @@ const SAMPLE_RECIPES = [
     image: '🍝',
     ingredients: ['pasta', 'garlic', 'cream', 'parmesan', 'butter'],
     steps: ['Boil pasta', 'Sauté garlic in butter', 'Add cream and parmesan', 'Toss with pasta', 'Serve hot'],
-    source: 'YummyTok Community',
+    source: 'Food Village Community',
   },
   {
     id: 'yt2',

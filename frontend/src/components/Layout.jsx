@@ -55,7 +55,7 @@ function Layout({ children }) {
           }
         >
           <Sparkles size={22} />
-          <span>YummyTok</span>
+          <span>Food Village</span>
         </NavLink>
         
         <NavLink 
