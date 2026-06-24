@@ -128,6 +128,31 @@
   margin: 0;
 }
 
+.creativeMealsButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: rgba(233, 30, 99, 0.12);
+  border: 2px solid rgba(233, 30, 99, 0.35);
+  border-radius: 10px;
+  color: #f472b6;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: fit-content;
+}
+
+.creativeMealsButton:hover {
+  background: rgba(233, 30, 99, 0.18);
+  border-color: #e91e63;
+  transform: translateY(-1px);
+}
+
 .backBtn {
   width: 40px;
   height: 40px;
@@ -257,6 +282,12 @@
 }
 
 /* Top Right: Ingredients Button (Smaller) */
+.filterButtonGroup {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
 .ingredientsButton {
   padding: 0.875rem 1.25rem;
   background: rgba(74, 222, 128, 0.1);
@@ -1661,6 +1692,10 @@
 }
 
 @media (max-width: 400px) {
+  .filterButtonGroup {
+    grid-template-columns: 1fr;
+  }
+
   .recipesGrid {
     grid-template-columns: 1fr;
   }

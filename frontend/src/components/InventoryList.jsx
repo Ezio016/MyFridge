@@ -34,8 +34,8 @@ function InventoryList({ items, onDelete, onEdit, loading }) {
   if (!items || items.length === 0) {
     return (
       <div className={styles.empty}>
-        <Refrigerator size={48} />
-        <h3>Fridge is empty!</h3>
+        <Package size={48} />
+        <h3>Inventory is empty!</h3>
         <p>Tap + to add items</p>
       </div>
     )

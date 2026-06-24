@@ -1,7 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-
-const API_BASE = import.meta.env.VITE_API_URL || 
-  (import.meta.env.DEV ? 'http://localhost:8000' : 'https://myfridge-di8a.onrender.com')
+import { API_BASE } from '../api/config'
 
 const AuthContext = createContext(null)
 
@@ -20,7 +18,7 @@ export function AuthProvider({ children }) {
 
   const verifyToken = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/auth/me`, {
+      const res = await fetch(`${API_BASE}/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -41,7 +39,7 @@ export function AuthProvider({ children }) {
   }
 
   const login = async (email, password) => {
-    const res = await fetch(`${API_BASE}/api/auth/login/json`, {
+    const res = await fetch(`${API_BASE}/auth/login/json`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -60,7 +58,7 @@ export function AuthProvider({ children }) {
   }
 
   const register = async (email, password, name) => {
-    const res = await fetch(`${API_BASE}/api/auth/register`, {
+    const res = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, name })

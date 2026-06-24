@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
-import { ChefHat, Clock, ArrowLeft, Check, Heart, ShoppingCart, Search, X, Send, Loader, Palette } from 'lucide-react'
+import { ChefHat, Clock, ArrowLeft, Check, Heart, ShoppingCart, Search, X, Send, Loader, Palette, FlaskConical } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { inventoryAPI, recipeAPI, chatAPI, userAPI } from '../api/client'
+import { API_BASE } from '../api/config'
 import { useAuth } from '../context/AuthContext'
 import { useFavorites } from '../hooks/useFavorites'
 import { addMultipleToCart } from '../utils/cartUtils'
@@ -16,6 +18,7 @@ const MODE = {
 }
 
 function Chef() {
+  const navigate = useNavigate()
   const [mode, setMode] = useState(MODE.LOADING)
   const [inventory, setInventory] = useState([])
   const [baseRecipes, setBaseRecipes] = useState([]) // Ranked/base order from backend + local ranking logic
@@ -931,8 +934,7 @@ function Chef() {
     if (!recipe) return
     setLoadingFlavor(true)
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-      const res = await fetch(`${API_URL}/api/lab/flavor/analyze`, {
+      const res = await fetch(`${API_BASE}/lab/flavor/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ingredients: recipe.ingredients || [] })
@@ -993,8 +995,7 @@ function Chef() {
     
     setRemixLoading(true)
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-      const res = await fetch(`${API_URL}/api/lab/remix`, {
+      const res = await fetch(`${API_BASE}/lab/remix`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1142,6 +1143,7 @@ function Chef() {
                   </button>
                 )}
               </div>
+
             </div>
 
             {/* Filter Bar - 2x2 Grid */}
@@ -1170,8 +1172,9 @@ function Chef() {
                 </select>
 
                 {/* Top Right: Only Use Ingredients in Fridge */}
+                <div className={styles.filterButtonGroup}>
                   <button
-                  className={`${styles.ingredientsButton} ${controlsState.filters?.readyOnly ? styles.active : ''}`}
+                    className={`${styles.ingredientsButton} ${controlsState.filters?.readyOnly ? styles.active : ''}`}
                     onClick={() => {
                       setControlsState(prev => {
                         const n = normalizeControlsState(prev)
@@ -1179,8 +1182,17 @@ function Chef() {
                       })
                     }}
                   >
-                  ✨ Only Use ingredients in Fridge
+                    ✨ Only Use ingredients in Fridge
                   </button>
+                  <button
+                    type="button"
+                    className={styles.creativeMealsButton}
+                    onClick={() => navigate('/lab')}
+                  >
+                    <FlaskConical size={18} />
+                    Creative Meals
+                  </button>
+                </div>
 
                 {/* Bottom Left: Prep Time */}
                 <select

@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowLeft, Shuffle, Combine, RefreshCw, Sparkles, FlaskConical, ChevronDown, Save, Check } from 'lucide-react'
+import { API_BASE } from '../api/config'
 import styles from './RecipeLab.module.css'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 
 export default function RecipeLab() {
@@ -43,7 +42,7 @@ export default function RecipeLab() {
   
   const loadRecipes = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/recipes`)
+      const res = await fetch(`${API_BASE}/recipes/`)
       const data = await res.json()
       setRecipes(data.recipes || data || [])
     } catch (err) {
@@ -80,7 +79,7 @@ export default function RecipeLab() {
     setError(null)
     
     try {
-      const res = await fetch(`${API_URL}/api/lab/fuse`, {
+      const res = await fetch(`${API_BASE}/lab/fuse`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -108,7 +107,7 @@ export default function RecipeLab() {
     setError(null)
     
     try {
-      const res = await fetch(`${API_URL}/api/lab/random`, {
+      const res = await fetch(`${API_BASE}/lab/random`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -140,7 +139,7 @@ export default function RecipeLab() {
     setError(null)
     
     try {
-      const res = await fetch(`${API_URL}/api/lab/remix`, {
+      const res = await fetch(`${API_BASE}/lab/remix`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
