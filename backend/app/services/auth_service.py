@@ -47,10 +47,17 @@ def decode_token(token: str) -> Optional[TokenData]:
     """Decode and validate a JWT token."""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = payload.get("sub")
+        # The JWT "sub" claim must be a string per RFC 7519 (python-jose
+        # enforces this), so it is stored as a string and cast back to int here.
+        sub = payload.get("sub")
         email: str = payload.get("email")
         
-        if user_id is None:
+        if sub is None:
+            return None
+        
+        try:
+            user_id = int(sub)
+        except (TypeError, ValueError):
             return None
         
         return TokenData(user_id=user_id, email=email)
@@ -112,6 +119,7 @@ def create_user(db: Session, user_data: UserRegister) -> User:
 def create_token_for_user(user: User) -> str:
     """Create access token for a user."""
     access_token = create_access_token(
-        data={"sub": user.id, "email": user.email}
+        # "sub" must be a string per RFC 7519 / python-jose validation.
+        data={"sub": str(user.id), "email": user.email}
     )
     return access_token

@@ -14,7 +14,7 @@ psycopg2-binary>=2.9.9
 # Authentication
 passlib[bcrypt]>=1.7.4
 python-jose[cryptography]>=3.3.0
-bcrypt>=4.0.0
+bcrypt>=4.0.0,<4.1  # passlib 1.7.4 is incompatible with bcrypt >= 4.1 (breaks password hashing)
 
 # Recipe scraping
 beautifulsoup4>=4.14.0

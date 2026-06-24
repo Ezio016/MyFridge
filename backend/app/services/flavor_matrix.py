@@ -296,7 +296,7 @@ def get_recipe_flavor_from_db(db: Session, recipe_id: str) -> Optional[Dict]:
     
     recipe = db.query(Recipe).filter(
         (Recipe.external_id == recipe_id) | 
-        (Recipe.id == int(recipe_id) if recipe_id.isdigit() else -1)
+        (Recipe.id == (int(recipe_id) if recipe_id.isdigit() else -1))
     ).first()
     
     if recipe and recipe.flavor_profile:
@@ -340,7 +340,7 @@ def calculate_recipe_flavor_db(db: Session, recipe_id: str) -> Optional[Dict]:
     from ..models import Recipe
     recipe = db.query(Recipe).filter(
         (Recipe.external_id == recipe_id) | 
-        (Recipe.id == int(recipe_id) if recipe_id.isdigit() else -1)
+        (Recipe.id == (int(recipe_id) if recipe_id.isdigit() else -1))
     ).first()
     
     if recipe:
@@ -417,7 +417,7 @@ def update_user_flavor_profile(
     # Get recipe flavor profile
     recipe = db.query(Recipe).filter(
         (Recipe.external_id == recipe_id) | 
-        (Recipe.id == int(recipe_id) if recipe_id.isdigit() else -1)
+        (Recipe.id == (int(recipe_id) if recipe_id.isdigit() else -1))
     ).first()
     
     if not recipe or not recipe.flavor_profile:

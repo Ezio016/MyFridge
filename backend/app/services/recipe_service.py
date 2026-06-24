@@ -72,7 +72,7 @@ class RecipeService:
         
         # Try external_id first, then internal id
         recipe = self.db.query(Recipe).filter(
-            or_(Recipe.external_id == recipe_id, Recipe.id == int(recipe_id) if recipe_id.isdigit() else -1)
+            or_(Recipe.external_id == recipe_id, Recipe.id == (int(recipe_id) if recipe_id.isdigit() else -1))
         ).first()
         
         return recipe.to_dict() if recipe else None
@@ -82,7 +82,7 @@ class RecipeService:
         self._ensure_db()
         
         return self.db.query(Recipe).filter(
-            or_(Recipe.external_id == recipe_id, Recipe.id == int(recipe_id) if recipe_id.isdigit() else -1)
+            or_(Recipe.external_id == recipe_id, Recipe.id == (int(recipe_id) if recipe_id.isdigit() else -1))
         ).first()
     
     def search_recipes(

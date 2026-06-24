@@ -75,7 +75,7 @@ def get_recipe_vector_from_db(db: Session, recipe_id: str) -> Optional[List[int]
     """Get pre-computed vector from database."""
     recipe = db.query(Recipe).filter(
         (Recipe.external_id == recipe_id) | 
-        (Recipe.id == int(recipe_id) if recipe_id.isdigit() else -1)
+        (Recipe.id == (int(recipe_id) if recipe_id.isdigit() else -1))
     ).first()
     
     if recipe and recipe.vector:
@@ -290,7 +290,7 @@ def find_similar_recipes_db(
     # Get target recipe vector
     target_recipe = db.query(Recipe).filter(
         (Recipe.external_id == recipe_id) | 
-        (Recipe.id == int(recipe_id) if recipe_id.isdigit() else -1)
+        (Recipe.id == (int(recipe_id) if recipe_id.isdigit() else -1))
     ).first()
     
     if not target_recipe or not target_recipe.vector:
