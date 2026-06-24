@@ -5,7 +5,7 @@ from sqlalchemy import desc
 
 from ..models import (
     User, UserFlavorProfile, UserRecipeInteraction,
-    FavoriteRecipe, Recipe, RecipeFlavorProfile
+    FavoriteRecipe, Recipe, RecipeFlavorProfile, UserFollow
 )
 from .flavor_matrix import update_user_flavor_profile as update_flavor
 
@@ -78,7 +78,7 @@ def log_recipe_interaction(
     # Get recipe
     recipe = db.query(Recipe).filter(
         (Recipe.external_id == recipe_id) | 
-        (Recipe.id == int(recipe_id) if recipe_id.isdigit() else -1)
+        (Recipe.id == (int(recipe_id) if recipe_id.isdigit() else -1))
     ).first()
     
     if not recipe:
@@ -105,8 +105,8 @@ def log_recipe_interaction(
     )
     db.add(interaction)
     
-    # Handle like (add to favorites)
-    if interaction_type == "like":
+    # Handle like / save (add to favorites)
+    if interaction_type in ("like", "save"):
         existing = db.query(FavoriteRecipe).filter(
             FavoriteRecipe.user_id == user_id,
             FavoriteRecipe.recipe_id == recipe.id
@@ -277,7 +277,7 @@ def add_to_favorites(db: Session, user_id: int, recipe_id: str) -> Dict:
     """Add a recipe to user's favorites."""
     recipe = db.query(Recipe).filter(
         (Recipe.external_id == recipe_id) | 
-        (Recipe.id == int(recipe_id) if recipe_id.isdigit() else -1)
+        (Recipe.id == (int(recipe_id) if recipe_id.isdigit() else -1))
     ).first()
     
     if not recipe:
@@ -302,7 +302,7 @@ def remove_from_favorites(db: Session, user_id: int, recipe_id: str) -> Dict:
     """Remove a recipe from user's favorites."""
     recipe = db.query(Recipe).filter(
         (Recipe.external_id == recipe_id) | 
-        (Recipe.id == int(recipe_id) if recipe_id.isdigit() else -1)
+        (Recipe.id == (int(recipe_id) if recipe_id.isdigit() else -1))
     ).first()
     
     if not recipe:
@@ -320,3 +320,80 @@ def remove_from_favorites(db: Session, user_id: int, recipe_id: str) -> Dict:
     db.commit()
     
     return {"success": True, "message": "Removed from favorites"}
+
+
+# ============================================================
+# SOCIAL GRAPH (follow / unfollow)
+# ============================================================
+
+def follow_user(db: Session, follower_id: int, followee_id: int) -> Dict:
+    """Create a follow edge from ``follower_id`` to ``followee_id``."""
+    if follower_id == followee_id:
+        return {"success": False, "error": "You cannot follow yourself"}
+
+    followee = db.query(User).filter(User.id == followee_id).first()
+    if not followee:
+        return {"success": False, "error": "User to follow not found"}
+
+    existing = db.query(UserFollow).filter(
+        UserFollow.follower_id == follower_id,
+        UserFollow.followee_id == followee_id,
+    ).first()
+
+    if existing:
+        return {
+            "success": True,
+            "following": True,
+            "follower_id": follower_id,
+            "followee_id": followee_id,
+            "message": "Already following",
+        }
+
+    db.add(UserFollow(follower_id=follower_id, followee_id=followee_id))
+    db.commit()
+
+    return {
+        "success": True,
+        "following": True,
+        "follower_id": follower_id,
+        "followee_id": followee_id,
+        "message": "Now following",
+    }
+
+
+def unfollow_user(db: Session, follower_id: int, followee_id: int) -> Dict:
+    """Remove the follow edge from ``follower_id`` to ``followee_id``."""
+    edge = db.query(UserFollow).filter(
+        UserFollow.follower_id == follower_id,
+        UserFollow.followee_id == followee_id,
+    ).first()
+
+    if edge:
+        db.delete(edge)
+        db.commit()
+
+    return {
+        "success": True,
+        "following": False,
+        "follower_id": follower_id,
+        "followee_id": followee_id,
+        "message": "Unfollowed",
+    }
+
+
+def get_following(db: Session, user_id: int) -> List[Dict]:
+    """Return the list of users that ``user_id`` follows."""
+    edges = db.query(UserFollow).filter(UserFollow.follower_id == user_id).all()
+    return [
+        {"id": e.followee.id, "name": e.followee.name, "email": e.followee.email}
+        for e in edges if e.followee
+    ]
+
+
+def get_followers(db: Session, user_id: int) -> List[Dict]:
+    """Return the list of users that follow ``user_id``."""
+    edges = db.query(UserFollow).filter(UserFollow.followee_id == user_id).all()
+    return [
+        {"id": e.follower.id, "name": e.follower.name, "email": e.follower.email}
+        for e in edges if e.follower
+    ]

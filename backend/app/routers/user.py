@@ -11,6 +11,7 @@ from ..schemas import (
     FlavorVector, RecipeResponse
 )
 from ..services import user_service
+from ..services import pagerank
 from .auth import get_current_user, get_current_user_required
 
 router = APIRouter(prefix="/api/user", tags=["user"])
@@ -169,3 +170,90 @@ async def get_recommendations_post(
         user_flavor_profile=FlavorVector(**flavor_profile) if flavor_profile else None,
         match_scores=[r["match_score"] for r in recommendations]
     )
+
+
+# ============================================================
+# SOCIAL GRAPH ENDPOINTS (follow / influence / network recs)
+# ============================================================
+
+@router.post("/follow/{user_id}")
+async def follow(
+    user_id: int,
+    current_user: User = Depends(get_current_user_required),
+    db: Session = Depends(get_db)
+):
+    """Follow another user (builds the social graph used by PageRank)."""
+    result = user_service.follow_user(db, current_user.id, user_id)
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail=result.get("error", "Failed"))
+    return result
+
+
+@router.delete("/follow/{user_id}")
+async def unfollow(
+    user_id: int,
+    current_user: User = Depends(get_current_user_required),
+    db: Session = Depends(get_db)
+):
+    """Unfollow a user."""
+    result = user_service.unfollow_user(db, current_user.id, user_id)
+    return result
+
+
+@router.get("/following")
+async def list_following(
+    current_user: User = Depends(get_current_user_required),
+    db: Session = Depends(get_db)
+):
+    """List users the current user follows."""
+    following = user_service.get_following(db, current_user.id)
+    return {"following": following, "count": len(following)}
+
+
+@router.get("/followers")
+async def list_followers(
+    current_user: User = Depends(get_current_user_required),
+    db: Session = Depends(get_db)
+):
+    """List users who follow the current user."""
+    followers = user_service.get_followers(db, current_user.id)
+    return {"followers": followers, "count": len(followers)}
+
+
+@router.get("/influence")
+async def get_influence(
+    current_user: User = Depends(get_current_user_required),
+    db: Session = Depends(get_db)
+):
+    """Get the current user's PageRank influence score and leaderboard rank."""
+    influence = pagerank.get_user_influence(db, current_user.id)
+    if not influence:
+        raise HTTPException(status_code=404, detail="Influence not available")
+    return influence
+
+
+@router.get("/recommendations/network")
+async def get_network_recommendations(
+    limit: int = Query(default=10, ge=1, le=50),
+    followed_only: bool = Query(default=False),
+    current_user: User = Depends(get_current_user_required),
+    db: Session = Depends(get_db)
+):
+    """Recommend recipes using influence-weighted social engagement (PageRank).
+
+    Aggregates the weighted interactions (like / share / save / order / cook)
+    of every other profile, scaling each by that profile's PageRank influence
+    so recommendations from well-connected, highly-engaged users rank highest.
+    Set ``followed_only=true`` to restrict to people the user follows.
+    """
+    recommendations = pagerank.get_network_recommendations(
+        db,
+        current_user.id,
+        limit=limit,
+        followed_only=followed_only,
+    )
+    return {
+        "recommendations": recommendations,
+        "count": len(recommendations),
+        "recommendation_type": "network_pagerank",
+    }

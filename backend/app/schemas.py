@@ -182,6 +182,11 @@ class InteractionType(str, Enum):
     COOK = "cook"
     SHOP = "shop"
     UNLIKE = "unlike"
+    # Social engagement signals used by the PageRank recommender
+    SHARE = "share"      # user shared the recipe with their network
+    SAVE = "save"        # user saved/bookmarked the recipe
+    ORDER = "order"      # user ordered ingredients / the dish
+    COOKED = "cooked"    # user followed through and cooked the recipe
 
 
 class RecipeInteractionRequest(BaseModel):
@@ -215,6 +220,56 @@ class RecommendationResponse(BaseModel):
     recipes: list[RecipeResponse]
     user_flavor_profile: Optional[FlavorVector] = None
     match_scores: list[float] = []
+
+
+# ============================================================
+# SOCIAL GRAPH / PAGERANK SCHEMAS
+# ============================================================
+
+class FollowResponse(BaseModel):
+    """Response after a follow / unfollow action."""
+    success: bool
+    following: bool
+    follower_id: int
+    followee_id: int
+    message: Optional[str] = None
+
+
+class UserSummary(BaseModel):
+    """Lightweight user summary for social listings."""
+    id: int
+    name: Optional[str] = None
+    email: str
+    influence_score: float = 0.0
+
+    class Config:
+        from_attributes = True
+
+
+class InfluenceResponse(BaseModel):
+    """A user's PageRank influence within the social graph."""
+    user_id: int
+    influence_score: float
+    rank: int
+    total_users: int
+    followers: int
+    following: int
+
+
+class NetworkRecommendation(BaseModel):
+    """A single recipe recommended via the social PageRank model."""
+    recipe: RecipeResponse
+    social_score: float
+    endorsements: int
+    influencers: list[UserSummary] = []
+    signals: dict[str, int] = {}
+
+
+class NetworkRecommendationResponse(BaseModel):
+    """Response for social/PageRank-based recommendations."""
+    recommendations: list[NetworkRecommendation]
+    count: int
+    recommendation_type: str = "network_pagerank"
 
 
 # --- Fridge Item Schemas ---

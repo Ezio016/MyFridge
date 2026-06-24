@@ -1,5 +1,5 @@
 """SQLAlchemy database models."""
-from sqlalchemy import Column, Integer, String, Float, Date, DateTime, Boolean, Text, ForeignKey, JSON
+from sqlalchemy import Column, Integer, String, Float, Date, DateTime, Boolean, Text, ForeignKey, JSON, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from datetime import date
@@ -63,6 +63,41 @@ class User(Base):
     favorites = relationship("FavoriteRecipe", back_populates="user")
     fridge_items = relationship("FridgeItem", back_populates="user")
     interactions = relationship("UserRecipeInteraction", back_populates="user")
+
+    # Social graph: users this user follows / is followed by
+    following = relationship(
+        "UserFollow",
+        foreign_keys="UserFollow.follower_id",
+        back_populates="follower",
+        cascade="all, delete-orphan",
+    )
+    followers = relationship(
+        "UserFollow",
+        foreign_keys="UserFollow.followee_id",
+        back_populates="followee",
+        cascade="all, delete-orphan",
+    )
+
+
+class UserFollow(Base):
+    """Directed social-graph edge: ``follower_id`` follows ``followee_id``.
+
+    These edges form the network used by the PageRank influence model:
+    a follow edge is treated as an endorsement that flows influence from the
+    follower toward the followee (i.e. people you follow accrue authority).
+    """
+    __tablename__ = "user_follows"
+    __table_args__ = (
+        UniqueConstraint("follower_id", "followee_id", name="uq_follower_followee"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    follower_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    followee_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    follower = relationship("User", foreign_keys=[follower_id], back_populates="following")
+    followee = relationship("User", foreign_keys=[followee_id], back_populates="followers")
 
 
 class UserFlavorProfile(Base):
