@@ -73,7 +73,7 @@ function Landing() {
       
       <div className={styles.hero}>
         <div className={styles.logo}>
-          <Package className={styles.logoIcon} aria-hidden="true" />
+          <img className={styles.logoIcon} src="/fridge.svg" alt="" aria-hidden="true" />
           <h1>MyFridge</h1>
         </div>
         <p className={styles.tagline}>
